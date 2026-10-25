@@ -39,6 +39,20 @@ enum GradeLevel: string implements HasLabel
         };
     }
 
+    /**
+     * Build a class name from this level and a section: "6e" + "1" gives "6e1",
+     * "2nde" + "C1" gives "2nde C1", "CP1" + "A" gives "CP1 A".
+     */
+    public function className(string $section): string
+    {
+        $label = $this->getLabel();
+        $section = trim($section);
+
+        $glued = ctype_alpha(substr($label, -1)) && ctype_digit(substr($section, 0, 1));
+
+        return $glued ? $label.$section : "{$label} {$section}";
+    }
+
     public function isPrimary(): bool
     {
         return in_array($this, [self::Cp1, self::Cp2, self::Ce1, self::Ce2, self::Cm1, self::Cm2], true);

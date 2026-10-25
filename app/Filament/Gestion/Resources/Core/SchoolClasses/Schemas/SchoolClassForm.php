@@ -24,15 +24,22 @@ class SchoolClassForm
                 Select::make('level')
                     ->label('Niveau')
                     ->options(GradeLevel::groupedOptions())
-                    ->required(),
-                TextInput::make('name')
-                    ->label('Nom de la classe')
-                    ->placeholder('CP1 A, 6e 2, Tle D…')
                     ->required()
-                    ->maxLength(50)
-                    ->unique(modifyRuleUsing: fn (Unique $rule, Get $get): Unique => $rule->where('school_year_id', $get('school_year_id')))
+                    ->live(),
+                TextInput::make('section')
+                    ->label('Section')
+                    ->placeholder('1, 2, A, C1…')
+                    ->helperText(fn (Get $get): string => ($level = GradeLevel::tryFrom((string) $get('level'))) && filled($get('section'))
+                        ? 'Nom de la classe : '.$level->className($get('section'))
+                        : 'Le nom est composé du niveau et de la section, ex. 6e + 1 = 6e1.')
+                    ->required()
+                    ->maxLength(20)
+                    ->live(onBlur: true)
+                    ->unique(modifyRuleUsing: fn (Unique $rule, Get $get): Unique => $rule
+                        ->where('school_year_id', $get('school_year_id'))
+                        ->where('level', $get('level')))
                     ->validationMessages([
-                        'unique' => 'Une classe porte déjà ce nom pour cette année scolaire.',
+                        'unique' => 'Cette classe existe déjà pour cette année scolaire.',
                     ]),
                 TextInput::make('capacity')
                     ->label('Effectif maximum')

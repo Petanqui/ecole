@@ -10,7 +10,8 @@
 
 ## Données
 - Niveaux : primaire (CP1 → CM2) et secondaire (6e → Terminale), pas de maternelle
-- Séries du secondaire (A, C, D…) portées par le nom de la classe (ex. « Tle D ») pour le MVP
+- Classe = niveau + section ; le nom est composé automatiquement (6e + 1 = « 6e1 », 2nde + C1 = « 2nde C1 »)
+- Séries du secondaire (A, C, D…) portées par la section pour le MVP
 - Matricule national MENA : facultatif à l'inscription, mais unique
 - Code interne élève généré automatiquement (EL-AAAA-NNNN) : AAAA = année civile de création de la fiche,
   NNNN repart à 0001 chaque année ; un code n'est jamais réattribué, même après suppression

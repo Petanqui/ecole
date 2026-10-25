@@ -22,7 +22,7 @@ test('staff can create a class from the gestion panel', function () {
         ->assertSchemaStateSet(['school_year_id' => $schoolYear->id])
         ->fillForm([
             'level' => GradeLevel::Cp1->value,
-            'name' => 'CP1 A',
+            'section' => 'A',
             'capacity' => 45,
         ])
         ->call('create')
@@ -34,48 +34,75 @@ test('staff can create a class from the gestion panel', function () {
         ->school_year_id->toBe($schoolYear->id);
 });
 
-test('staff can create a secondary class', function () {
+test('the class name is built from the level and the section', function (GradeLevel $level, string $section, string $expectedName) {
+    $schoolClass = SchoolClass::factory()->create(['level' => $level, 'section' => $section]);
+
+    expect($schoolClass->name)->toBe($expectedName);
+})->with([
+    [GradeLevel::Sixieme, '1', '6e1'],
+    [GradeLevel::Quatrieme, '3', '4e3'],
+    [GradeLevel::Seconde, 'C1', '2nde C1'],
+    [GradeLevel::Terminale, 'D', 'Terminale D'],
+    [GradeLevel::Cp1, 'A', 'CP1 A'],
+]);
+
+test('the same section can be used at different levels of the same year', function () {
     $schoolYear = SchoolYear::factory()->current()->create();
 
-    Livewire::test(CreateSchoolClass::class)
-        ->fillForm([
-            'level' => GradeLevel::Terminale->value,
-            'name' => 'Tle D',
-        ])
-        ->call('create')
-        ->assertHasNoFormErrors();
+    foreach ([GradeLevel::Sixieme, GradeLevel::Cinquieme, GradeLevel::Quatrieme] as $level) {
+        Livewire::test(CreateSchoolClass::class)
+            ->fillForm(['level' => $level->value, 'section' => '1'])
+            ->call('create')
+            ->assertHasNoFormErrors();
+    }
 
-    expect(SchoolClass::sole()->level)->toBe(GradeLevel::Terminale);
+    expect($schoolYear->classes()->orderBy('id')->pluck('name')->all())->toBe(['6e1', '5e1', '4e1']);
 });
 
-test('two classes of the same school year cannot share a name', function () {
+test('a level cannot have the same section twice in a school year', function () {
     $schoolYear = SchoolYear::factory()->create();
-    SchoolClass::factory()->for($schoolYear)->create(['name' => 'CP1 A']);
+    SchoolClass::factory()->for($schoolYear)->create(['level' => GradeLevel::Sixieme, 'section' => '1']);
 
     Livewire::test(CreateSchoolClass::class)
         ->fillForm([
             'school_year_id' => $schoolYear->id,
-            'level' => GradeLevel::Cp1->value,
-            'name' => 'CP1 A',
+            'level' => GradeLevel::Sixieme->value,
+            'section' => '1',
         ])
         ->call('create')
-        ->assertHasFormErrors(['name' => 'unique']);
+        ->assertHasFormErrors(['section' => 'unique']);
 });
 
-test('the same class name can be reused in another school year', function () {
-    SchoolClass::factory()->create(['name' => 'CP1 A']);
+test('the same class can exist again in another school year', function () {
+    SchoolClass::factory()->create(['level' => GradeLevel::Sixieme, 'section' => '1']);
     $otherSchoolYear = SchoolYear::factory()->create();
 
     Livewire::test(CreateSchoolClass::class)
         ->fillForm([
             'school_year_id' => $otherSchoolYear->id,
-            'level' => GradeLevel::Cp1->value,
-            'name' => 'CP1 A',
+            'level' => GradeLevel::Sixieme->value,
+            'section' => '1',
         ])
         ->call('create')
         ->assertHasNoFormErrors();
 
-    expect(SchoolClass::where('name', 'CP1 A')->count())->toBe(2);
+    expect(SchoolClass::where('name', '6e1')->count())->toBe(2);
+});
+
+test('staff can create a secondary class', function () {
+    SchoolYear::factory()->current()->create();
+
+    Livewire::test(CreateSchoolClass::class)
+        ->fillForm([
+            'level' => GradeLevel::Terminale->value,
+            'section' => 'D',
+        ])
+        ->call('create')
+        ->assertHasNoFormErrors();
+
+    expect(SchoolClass::sole())
+        ->level->toBe(GradeLevel::Terminale)
+        ->name->toBe('Terminale D');
 });
 
 test('the class list shows only the current school year by default', function () {

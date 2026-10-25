@@ -10,11 +10,21 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-#[Fillable(['school_year_id', 'level', 'name', 'capacity'])]
+#[Fillable(['school_year_id', 'level', 'section', 'capacity'])]
 class SchoolClass extends Model
 {
     /** @use HasFactory<SchoolClassFactory> */
     use HasFactory;
+
+    /**
+     * The name is always derived from the level and the section, e.g. "6e" + "1" = "6e1".
+     */
+    protected static function booted(): void
+    {
+        static::saving(function (SchoolClass $schoolClass): void {
+            $schoolClass->name = $schoolClass->level->className($schoolClass->section);
+        });
+    }
 
     /**
      * Get the attributes that should be cast.

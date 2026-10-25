@@ -19,12 +19,10 @@ class SchoolClassFactory extends Factory
      */
     public function definition(): array
     {
-        $level = fake()->randomElement(GradeLevel::cases());
-
         return [
             'school_year_id' => SchoolYear::factory(),
-            'level' => $level,
-            'name' => $level->getLabel().' '.fake()->unique()->bothify('?#'),
+            'level' => fake()->randomElement(GradeLevel::cases()),
+            'section' => fake()->unique()->bothify('?#'),
             'capacity' => fake()->numberBetween(25, 60),
         ];
     }
