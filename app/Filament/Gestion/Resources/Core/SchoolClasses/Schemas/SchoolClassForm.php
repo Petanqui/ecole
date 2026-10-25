@@ -23,11 +23,11 @@ class SchoolClassForm
                     ->required(),
                 Select::make('level')
                     ->label('Niveau')
-                    ->options(GradeLevel::class)
+                    ->options(GradeLevel::groupedOptions())
                     ->required(),
                 TextInput::make('name')
                     ->label('Nom de la classe')
-                    ->placeholder('CP1 A')
+                    ->placeholder('CP1 A, 6e 2, Tle D…')
                     ->required()
                     ->maxLength(50)
                     ->unique(modifyRuleUsing: fn (Unique $rule, Get $get): Unique => $rule->where('school_year_id', $get('school_year_id')))

@@ -34,6 +34,20 @@ test('staff can create a class from the gestion panel', function () {
         ->school_year_id->toBe($schoolYear->id);
 });
 
+test('staff can create a secondary class', function () {
+    $schoolYear = SchoolYear::factory()->current()->create();
+
+    Livewire::test(CreateSchoolClass::class)
+        ->fillForm([
+            'level' => GradeLevel::Terminale->value,
+            'name' => 'Tle D',
+        ])
+        ->call('create')
+        ->assertHasNoFormErrors();
+
+    expect(SchoolClass::sole()->level)->toBe(GradeLevel::Terminale);
+});
+
 test('two classes of the same school year cannot share a name', function () {
     $schoolYear = SchoolYear::factory()->create();
     SchoolClass::factory()->for($schoolYear)->create(['name' => 'CP1 A']);

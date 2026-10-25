@@ -40,7 +40,7 @@ class SchoolClassesTable
                     ->default(fn (): ?int => SchoolYear::current()->value('id')),
                 SelectFilter::make('level')
                     ->label('Niveau')
-                    ->options(GradeLevel::class),
+                    ->options(GradeLevel::groupedOptions()),
             ])
             ->recordActions([
                 EditAction::make(),

@@ -9,6 +9,8 @@
 - Deux espaces Filament : /gestion (personnel) et /portail (parents, élèves)
 
 ## Données
+- Niveaux : primaire (CP1 → CM2) et secondaire (6e → Terminale), pas de maternelle
+- Séries du secondaire (A, C, D…) portées par le nom de la classe (ex. « Tle D ») pour le MVP
 - Matricule national MENA : facultatif à l'inscription, mais unique
 - Code interne élève généré automatiquement (EL-AAAA-NNNN)
 - Un parent appartient à UNE seule famille (MVP)
