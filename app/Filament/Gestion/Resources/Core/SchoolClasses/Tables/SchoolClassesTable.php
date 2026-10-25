@@ -3,9 +3,8 @@
 namespace App\Filament\Gestion\Resources\Core\SchoolClasses\Tables;
 
 use App\Enums\Core\GradeLevel;
+use App\Models\Core\SchoolClass;
 use App\Models\Core\SchoolYear;
-use Filament\Actions\BulkActionGroup;
-use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
@@ -29,9 +28,11 @@ class SchoolClassesTable
                 TextColumn::make('schoolYear.name')
                     ->label('Année scolaire')
                     ->sortable(),
-                TextColumn::make('capacity')
-                    ->label('Effectif max.')
-                    ->numeric(),
+                TextColumn::make('enrollments_count')
+                    ->label('Effectif')
+                    ->counts('enrollments')
+                    ->formatStateUsing(fn (int $state, SchoolClass $record): string => $record->capacity ? "{$state} / {$record->capacity}" : (string) $state)
+                    ->color(fn (int $state, SchoolClass $record): ?string => $record->capacity && $state >= $record->capacity ? 'danger' : null),
             ])
             ->filters([
                 SelectFilter::make('school_year_id')
@@ -44,11 +45,6 @@ class SchoolClassesTable
             ])
             ->recordActions([
                 EditAction::make(),
-            ])
-            ->toolbarActions([
-                BulkActionGroup::make([
-                    DeleteBulkAction::make(),
-                ]),
             ]);
     }
 }

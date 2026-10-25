@@ -5,6 +5,7 @@ namespace App\Filament\Gestion\Resources\Core\Students;
 use App\Filament\Gestion\Resources\Core\Students\Pages\CreateStudent;
 use App\Filament\Gestion\Resources\Core\Students\Pages\EditStudent;
 use App\Filament\Gestion\Resources\Core\Students\Pages\ListStudents;
+use App\Filament\Gestion\Resources\Core\Students\RelationManagers\EnrollmentsRelationManager;
 use App\Filament\Gestion\Resources\Core\Students\Schemas\StudentForm;
 use App\Filament\Gestion\Resources\Core\Students\Tables\StudentsTable;
 use App\Models\Core\Student;
@@ -40,6 +41,13 @@ class StudentResource extends Resource
     public static function table(Table $table): Table
     {
         return StudentsTable::configure($table);
+    }
+
+    public static function getRelations(): array
+    {
+        return [
+            EnrollmentsRelationManager::class,
+        ];
     }
 
     /**
