@@ -26,6 +26,17 @@
 - Comptes parents créés depuis la fiche famille ; mot de passe généré (8 caractères lisibles) à transmettre au parent
 - Supprimer un parent supprime son accès ; changer son nom/téléphone met à jour son compte
 
+## Notes
+- Année découpée en 3 trimestres, créés automatiquement avec l'année scolaire
+- Chaque classe a son programme (matière, coefficient, enseignant), pré-rempli depuis config/grades.php
+  à la création de la classe ; au lycée la série est la 1re lettre de la section (2nde C1 → C)
+- Coefficients types inspirés de la pratique ivoirienne : À VÉRIFIER par l'école et ajuster dans config/grades.php
+- Barème libre par évaluation (sur 10, 20, 50…)
+- Secondaire : chaque note ramenée sur 20, moyenne de matière = moyenne simple des notes, sur 20
+- Primaire : moyenne de matière = total des points / total des barèmes, ramené sur 10
+  (une composition sur 50 pèse 5 fois une note sur 10) ; tous les coefficients à 1
+- Rôle Enseignant : accès à /gestion limité à la saisie des notes de ses matières dans ses classes
+
 ## Hébergement
 - VPS en Europe, avec déclaration et demande d'autorisation de transfert à l'ARTCI
 - Fuseau horaire : Africa/Abidjan

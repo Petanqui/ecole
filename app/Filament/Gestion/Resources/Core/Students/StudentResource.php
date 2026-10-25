@@ -2,6 +2,7 @@
 
 namespace App\Filament\Gestion\Resources\Core\Students;
 
+use App\Filament\Gestion\Concerns\RestrictedToStaffMembers;
 use App\Filament\Gestion\Resources\Core\Students\Pages\CreateStudent;
 use App\Filament\Gestion\Resources\Core\Students\Pages\EditStudent;
 use App\Filament\Gestion\Resources\Core\Students\Pages\ListStudents;
@@ -19,6 +20,8 @@ use UnitEnum;
 
 class StudentResource extends Resource
 {
+    use RestrictedToStaffMembers;
+
     protected static ?string $model = Student::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedAcademicCap;

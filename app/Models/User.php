@@ -51,6 +51,16 @@ class User extends Authenticatable implements FilamentUser
         return $this->role === UserRole::Admin;
     }
 
+    public function isStaffMember(): bool
+    {
+        return $this->role->isStaffMember();
+    }
+
+    public function isTeacher(): bool
+    {
+        return $this->role === UserRole::Teacher;
+    }
+
     /**
      * The parent record linked to this account, for users with the guardian role.
      *

@@ -2,6 +2,7 @@
 
 namespace App\Filament\Gestion\Resources\Core\Families;
 
+use App\Filament\Gestion\Concerns\RestrictedToStaffMembers;
 use App\Filament\Gestion\Resources\Core\Families\Pages\CreateFamily;
 use App\Filament\Gestion\Resources\Core\Families\Pages\EditFamily;
 use App\Filament\Gestion\Resources\Core\Families\Pages\ListFamilies;
@@ -19,6 +20,8 @@ use UnitEnum;
 
 class FamilyResource extends Resource
 {
+    use RestrictedToStaffMembers;
+
     protected static ?string $model = Family::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedUserGroup;

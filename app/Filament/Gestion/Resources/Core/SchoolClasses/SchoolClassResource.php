@@ -2,9 +2,11 @@
 
 namespace App\Filament\Gestion\Resources\Core\SchoolClasses;
 
+use App\Filament\Gestion\Concerns\RestrictedToStaffMembers;
 use App\Filament\Gestion\Resources\Core\SchoolClasses\Pages\CreateSchoolClass;
 use App\Filament\Gestion\Resources\Core\SchoolClasses\Pages\EditSchoolClass;
 use App\Filament\Gestion\Resources\Core\SchoolClasses\Pages\ListSchoolClasses;
+use App\Filament\Gestion\Resources\Core\SchoolClasses\RelationManagers\ClassSubjectsRelationManager;
 use App\Filament\Gestion\Resources\Core\SchoolClasses\Schemas\SchoolClassForm;
 use App\Filament\Gestion\Resources\Core\SchoolClasses\Tables\SchoolClassesTable;
 use App\Models\Core\SchoolClass;
@@ -17,6 +19,8 @@ use UnitEnum;
 
 class SchoolClassResource extends Resource
 {
+    use RestrictedToStaffMembers;
+
     protected static ?string $model = SchoolClass::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
@@ -44,7 +48,7 @@ class SchoolClassResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            ClassSubjectsRelationManager::class,
         ];
     }
 

@@ -2,6 +2,7 @@
 
 namespace App\Models\Core;
 
+use App\Models\Grades\Term;
 use Database\Factories\Core\SchoolYearFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Scope;
@@ -21,6 +22,12 @@ class SchoolYear extends Model
      */
     protected static function booted(): void
     {
+        static::created(function (SchoolYear $schoolYear): void {
+            foreach ([1, 2, 3] as $number) {
+                $schoolYear->terms()->create(['number' => $number]);
+            }
+        });
+
         static::saved(function (SchoolYear $schoolYear): void {
             if ($schoolYear->is_current && ($schoolYear->wasRecentlyCreated || $schoolYear->wasChanged('is_current'))) {
                 static::query()
@@ -51,6 +58,16 @@ class SchoolYear extends Model
     public function classes(): HasMany
     {
         return $this->hasMany(SchoolClass::class);
+    }
+
+    /**
+     * The three terms of the year, created with it.
+     *
+     * @return HasMany<Term, $this>
+     */
+    public function terms(): HasMany
+    {
+        return $this->hasMany(Term::class)->orderBy('number');
     }
 
     /**

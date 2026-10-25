@@ -3,6 +3,8 @@
 namespace App\Models\Core;
 
 use App\Enums\Core\GradeLevel;
+use App\Models\Grades\ClassSubject;
+use App\Models\Grades\Subject;
 use Database\Factories\Core\SchoolClassFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -24,6 +26,44 @@ class SchoolClass extends Model
         static::saving(function (SchoolClass $schoolClass): void {
             $schoolClass->name = $schoolClass->level->className($schoolClass->section);
         });
+
+        static::created(function (SchoolClass $schoolClass): void {
+            $schoolClass->applyDefaultProgramme();
+        });
+    }
+
+    /**
+     * Add the subjects of the default programme of the class level that the class does not
+     * have yet. Subjects already in the programme keep their coefficient and teacher.
+     *
+     * @return int The number of subjects added.
+     */
+    public function applyDefaultProgramme(): int
+    {
+        $programme = $this->level->defaultProgramme($this->section);
+        $existingSubjectIds = $this->classSubjects()->pluck('subject_id');
+
+        $subjects = Subject::query()
+            ->whereIn('code', array_keys($programme))
+            ->whereNotIn('id', $existingSubjectIds)
+            ->get();
+
+        foreach ($subjects as $subject) {
+            $this->classSubjects()->create([
+                'subject_id' => $subject->id,
+                'coefficient' => $programme[$subject->code],
+            ]);
+        }
+
+        return $subjects->count();
+    }
+
+    /**
+     * @return HasMany<ClassSubject, $this>
+     */
+    public function classSubjects(): HasMany
+    {
+        return $this->hasMany(ClassSubject::class);
     }
 
     /**

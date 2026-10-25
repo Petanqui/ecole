@@ -47,6 +47,16 @@ class UserFactory extends Factory
     }
 
     /**
+     * Indicate that the user is a teacher.
+     */
+    public function teacher(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'role' => UserRole::Teacher,
+        ]);
+    }
+
+    /**
      * Indicate that the user is a parent with access to the portal.
      */
     public function guardian(): static

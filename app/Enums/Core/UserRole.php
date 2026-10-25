@@ -8,6 +8,7 @@ enum UserRole: string implements HasLabel
 {
     case Admin = 'admin';
     case Staff = 'staff';
+    case Teacher = 'teacher';
     case Guardian = 'guardian';
 
     public function getLabel(): string
@@ -15,8 +16,17 @@ enum UserRole: string implements HasLabel
         return match ($this) {
             self::Admin => 'Administrateur',
             self::Staff => 'Personnel',
+            self::Teacher => 'Enseignant',
             self::Guardian => 'Parent',
         };
+    }
+
+    /**
+     * Administrators and staff run the school; teachers only reach their own classes and subjects.
+     */
+    public function isStaffMember(): bool
+    {
+        return in_array($this, [self::Admin, self::Staff], true);
     }
 
     /**
@@ -25,7 +35,7 @@ enum UserRole: string implements HasLabel
     public function panelId(): string
     {
         return match ($this) {
-            self::Admin, self::Staff => 'gestion',
+            self::Admin, self::Staff, self::Teacher => 'gestion',
             self::Guardian => 'portail',
         };
     }

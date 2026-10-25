@@ -39,7 +39,7 @@ class UserResource extends Resource
 
     public static function getEloquentQuery(): Builder
     {
-        return parent::getEloquentQuery()->whereIn('role', [UserRole::Admin, UserRole::Staff]);
+        return parent::getEloquentQuery()->whereIn('role', [UserRole::Admin, UserRole::Staff, UserRole::Teacher]);
     }
 
     public static function form(Schema $schema): Schema
@@ -67,6 +67,7 @@ class UserResource extends Resource
                     ->options([
                         UserRole::Admin->value => UserRole::Admin->getLabel(),
                         UserRole::Staff->value => UserRole::Staff->getLabel(),
+                        UserRole::Teacher->value => UserRole::Teacher->getLabel(),
                     ])
                     ->default(UserRole::Staff->value)
                     ->required()
@@ -102,7 +103,8 @@ class UserResource extends Resource
                     ->searchable(),
                 TextColumn::make('role')
                     ->label('Rôle')
-                    ->badge(),
+                    ->badge()
+                    ->sortable(),
                 TextColumn::make('email')
                     ->label('E-mail')
                     ->placeholder('—'),

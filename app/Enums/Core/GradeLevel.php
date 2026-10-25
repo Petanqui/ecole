@@ -53,6 +53,53 @@ enum GradeLevel: string implements HasLabel
         return $glued ? $label.$section : "{$label} {$section}";
     }
 
+    /**
+     * Averages are out of 10 in primary school and out of 20 in secondary school.
+     */
+    public function gradingScale(): int
+    {
+        return $this->isPrimary() ? 10 : 20;
+    }
+
+    /**
+     * In primary school a subject average adds up points, so a composition out of 50 weighs
+     * five times a test out of 10. In secondary school every mark counts equally once
+     * brought back to the grading scale.
+     */
+    public function weightsMarksByMaxScore(): bool
+    {
+        return $this->isPrimary();
+    }
+
+    /**
+     * Upper secondary programmes depend on the series (A, C, D…).
+     */
+    public function hasSeries(): bool
+    {
+        return in_array($this, [self::Seconde, self::Premiere, self::Terminale], true);
+    }
+
+    /**
+     * The default programme of a class at this level, as subject code => coefficient.
+     * For upper secondary the series is the first letter of the section ("C1" => "C").
+     *
+     * @return array<string, int>
+     */
+    public function defaultProgramme(string $section): array
+    {
+        $programmes = config('grades.programmes');
+
+        if ($this->isPrimary()) {
+            return $programmes['primary'];
+        }
+
+        if ($this->hasSeries()) {
+            return $programmes[$this->value][strtoupper(substr(trim($section), 0, 1))] ?? [];
+        }
+
+        return $programmes[$this->value] ?? [];
+    }
+
     public function isPrimary(): bool
     {
         return in_array($this, [self::Cp1, self::Cp2, self::Ce1, self::Ce2, self::Cm1, self::Cm2], true);

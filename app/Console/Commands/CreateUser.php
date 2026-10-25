@@ -12,7 +12,7 @@ use Illuminate\Console\Command;
 use function Laravel\Prompts\password;
 use function Laravel\Prompts\text;
 
-#[Signature('app:create-user {--name= : Full name} {--phone= : Phone number, e.g. 07 00 00 00 00} {--email= : Optional e-mail address} {--password= : Password (prompted when omitted)} {--role=admin : admin or staff}')]
+#[Signature('app:create-user {--name= : Full name} {--phone= : Phone number, e.g. 07 00 00 00 00} {--email= : Optional e-mail address} {--password= : Password (prompted when omitted)} {--role=admin : admin, staff or teacher}')]
 #[Description('Create a staff account that logs in to /gestion with a phone number and password')]
 class CreateUser extends Command
 {
@@ -23,8 +23,8 @@ class CreateUser extends Command
     {
         $role = UserRole::tryFrom((string) $this->option('role'));
 
-        if (! in_array($role, [UserRole::Admin, UserRole::Staff], true)) {
-            $this->components->error('Rôle invalide : utilisez admin ou staff. Les comptes parents se créent depuis la fiche famille.');
+        if (! in_array($role, [UserRole::Admin, UserRole::Staff, UserRole::Teacher], true)) {
+            $this->components->error('Rôle invalide : utilisez admin, staff ou teacher. Les comptes parents se créent depuis la fiche famille.');
 
             return self::FAILURE;
         }

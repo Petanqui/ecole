@@ -2,6 +2,7 @@
 
 namespace App\Filament\Gestion\Resources\Core\SchoolYears;
 
+use App\Filament\Gestion\Concerns\RestrictedToStaffMembers;
 use App\Filament\Gestion\Resources\Core\SchoolYears\Pages\ManageSchoolYears;
 use App\Models\Core\SchoolYear;
 use BackedEnum;
@@ -21,6 +22,8 @@ use UnitEnum;
 
 class SchoolYearResource extends Resource
 {
+    use RestrictedToStaffMembers;
+
     protected static ?string $model = SchoolYear::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCalendarDays;

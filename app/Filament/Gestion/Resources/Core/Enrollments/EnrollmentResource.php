@@ -2,6 +2,7 @@
 
 namespace App\Filament\Gestion\Resources\Core\Enrollments;
 
+use App\Filament\Gestion\Concerns\RestrictedToStaffMembers;
 use App\Filament\Gestion\Resources\Core\Enrollments\Pages\CreateEnrollment;
 use App\Filament\Gestion\Resources\Core\Enrollments\Pages\EditEnrollment;
 use App\Filament\Gestion\Resources\Core\Enrollments\Pages\ListEnrollments;
@@ -17,6 +18,8 @@ use UnitEnum;
 
 class EnrollmentResource extends Resource
 {
+    use RestrictedToStaffMembers;
+
     protected static ?string $model = Enrollment::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedClipboardDocumentCheck;
