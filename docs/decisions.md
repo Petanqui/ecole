@@ -21,6 +21,10 @@
 
 ## Connexion
 - Identifiant : numéro de téléphone + mot de passe (e-mail facultatif)
+- Rôles : Administrateur et Personnel → /gestion ; Parent → /portail (enseignants et élèves : plus tard)
+- Seuls les administrateurs gèrent les comptes du personnel (Administration → Comptes du personnel)
+- Comptes parents créés depuis la fiche famille ; mot de passe généré (8 caractères lisibles) à transmettre au parent
+- Supprimer un parent supprime son accès ; changer son nom/téléphone met à jour son compte
 
 ## Hébergement
 - VPS en Europe, avec déclaration et demande d'autorisation de transfert à l'ARTCI

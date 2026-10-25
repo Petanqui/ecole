@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Enums\Core\UserRole;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
@@ -27,11 +28,32 @@ class UserFactory extends Factory
         return [
             'name' => fake()->name(),
             'phone' => '+22507'.fake()->unique()->numerify('########'),
+            'role' => UserRole::Staff,
             'email' => fake()->unique()->safeEmail(),
             'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),
         ];
+    }
+
+    /**
+     * Indicate that the user is a school administrator.
+     */
+    public function admin(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'role' => UserRole::Admin,
+        ]);
+    }
+
+    /**
+     * Indicate that the user is a parent with access to the portal.
+     */
+    public function guardian(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'role' => UserRole::Guardian,
+        ]);
     }
 
     /**

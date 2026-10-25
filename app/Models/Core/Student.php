@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Facades\DB;
 
 #[Fillable(['family_id', 'mena_number', 'last_name', 'first_name', 'gender', 'birth_date', 'birth_place'])]
@@ -81,6 +82,16 @@ class Student extends Model
     public function enrollments(): HasMany
     {
         return $this->hasMany(Enrollment::class);
+    }
+
+    /**
+     * The enrollment of the student for the current school year, if any.
+     *
+     * @return HasOne<Enrollment, $this>
+     */
+    public function currentEnrollment(): HasOne
+    {
+        return $this->hasOne(Enrollment::class)->whereRelation('schoolYear', 'is_current', true);
     }
 
     /**
