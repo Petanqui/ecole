@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Auth\Login;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -26,7 +27,7 @@ class PortailPanelProvider extends PanelProvider
         return $panel
             ->id('portail')
             ->path('portail')
-            ->login()
+            ->login(Login::class)
             ->colors([
                 'primary' => Color::Sky,
             ])
