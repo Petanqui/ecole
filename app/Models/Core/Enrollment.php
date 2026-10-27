@@ -9,6 +9,7 @@ use App\Models\Billing\Payment;
 use App\Models\Grades\AdmissionExamScore;
 use Database\Factories\Core\EnrollmentFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -155,5 +156,26 @@ class Enrollment extends Model
         }
 
         return round($this->admissionExamScores->avg('score'), 2);
+    }
+
+    /**
+     * Enrollments whose student matches every word of the search (last name, first name or code),
+     * so "Koné Awa" and "awa kon" both find Awa Koné.
+     *
+     * @param  Builder<Enrollment>  $query
+     */
+    #[Scope]
+    protected function matchingStudent(Builder $query, string $search): void
+    {
+        $words = preg_split('/\s+/', trim($search), flags: PREG_SPLIT_NO_EMPTY);
+
+        $query->whereHas('student', function (Builder $query) use ($words): void {
+            foreach ($words as $word) {
+                $query->where(fn (Builder $query) => $query
+                    ->whereLike('last_name', "%{$word}%")
+                    ->orWhereLike('first_name', "%{$word}%")
+                    ->orWhereLike('code', "%{$word}%"));
+            }
+        });
     }
 }

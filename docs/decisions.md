@@ -106,6 +106,14 @@
 - Le personnel écrit à tous ; un enseignant seulement aux parents des classes où il enseigne, et ne voit que ses annonces
 - Texte simple (pas de mise en forme) ; signé « Administration » pour le personnel, du nom de l'enseignant sinon
 - Une annonce est marquée lue quand le parent ouvre la page Annonces ; l'école voit « lue par X / Y parents »
+- Conversations (Messagerie → Messages) : entre une famille (tous ses parents) et l'école, éventuellement
+  au sujet d'un enfant ; côté école, l'interlocuteur est l'administration ou un enseignant
+- Le personnel écrit au nom de l'administration à toute famille d'un élève inscrit ; un enseignant écrit en son nom
+  aux familles des classes où il enseigne
+- Le personnel voit et peut répondre à toutes les conversations (y compris celles des enseignants) ;
+  un enseignant ne voit que les siennes
+- Lu / non lu propre à chaque utilisateur ; ouvrir une conversation la marque lue ; nombre de non lues dans le menu
+- Une conversation et ses messages ne se suppriment pas
 
 ## Hébergement
 - VPS en Europe, avec déclaration et demande d'autorisation de transfert à l'ARTCI

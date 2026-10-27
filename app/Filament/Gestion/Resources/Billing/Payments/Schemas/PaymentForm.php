@@ -14,7 +14,6 @@ use Filament\Forms\Components\ToggleButtons;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
-use Illuminate\Database\Eloquent\Builder;
 use Livewire\Component;
 
 class PaymentForm
@@ -82,25 +81,15 @@ class PaymentForm
     }
 
     /**
-     * Current-year enrollments whose student matches every word of the search (last name, first name or code),
-     * so "Koné Awa" and "awa kon" both find Awa Koné; every enrollment when the search is empty.
+     * Current-year enrollments whose student matches the search; every enrollment when the search is empty.
      *
      * @return array<int, string>
      */
     protected static function enrollmentOptions(string $search): array
     {
-        $words = preg_split('/\s+/', trim($search), flags: PREG_SPLIT_NO_EMPTY);
-
         return Enrollment::query()
             ->whereRelation('schoolYear', 'is_current', true)
-            ->whereHas('student', function (Builder $query) use ($words): void {
-                foreach ($words as $word) {
-                    $query->where(fn (Builder $query) => $query
-                        ->whereLike('last_name', "%{$word}%")
-                        ->orWhereLike('first_name', "%{$word}%")
-                        ->orWhereLike('code', "%{$word}%"));
-                }
-            })
+            ->matchingStudent($search)
             ->with(['student', 'schoolClass'])
             ->orderBy(Student::select('last_name')->whereColumn('students.id', 'enrollments.student_id'))
             ->limit(50)
