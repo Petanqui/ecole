@@ -97,6 +97,16 @@
 - Portail : pour chaque enfant, heures d'absence de l'année (dont non justifiées) et retards, avec le détail ;
   le parent ne justifie pas en ligne, il apporte le justificatif au secrétariat
 
+## Messagerie
+- Messages sur le portail uniquement (pas de SMS ni d'e-mail pour l'instant)
+- Annonces (Messagerie → Annonces) : de l'école vers les parents, sans réponse ; destinataires = toute l'école,
+  un niveau ou une classe, pour l'année scolaire en cours ; publiées immédiatement
+- Les destinataires suivent les inscriptions : un parent dont l'accès portail est créé plus tard voit
+  aussi les annonces déjà publiées
+- Le personnel écrit à tous ; un enseignant seulement aux parents des classes où il enseigne, et ne voit que ses annonces
+- Texte simple (pas de mise en forme) ; signé « Administration » pour le personnel, du nom de l'enseignant sinon
+- Une annonce est marquée lue quand le parent ouvre la page Annonces ; l'école voit « lue par X / Y parents »
+
 ## Hébergement
 - VPS en Europe, avec déclaration et demande d'autorisation de transfert à l'ARTCI
 - Fuseau horaire : Africa/Abidjan
