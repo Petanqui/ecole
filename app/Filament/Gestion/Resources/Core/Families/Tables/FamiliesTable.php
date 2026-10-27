@@ -22,11 +22,14 @@ class FamiliesTable
                 TextColumn::make('guardians.phone')
                     ->label('Téléphones')
                     ->listWithLineBreaks()
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(),
                 TextColumn::make('guardians_count')
-                    ->label('Parents'),
+                    ->label('Parents')
+                    ->toggleable(),
                 TextColumn::make('students_count')
-                    ->label('Enfants'),
+                    ->label('Enfants')
+                    ->toggleable(),
                 TextColumn::make('address')
                     ->label('Adresse')
                     ->placeholder('—')
