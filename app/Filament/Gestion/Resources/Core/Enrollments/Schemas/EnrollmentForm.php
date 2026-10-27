@@ -2,11 +2,14 @@
 
 namespace App\Filament\Gestion\Resources\Core\Enrollments\Schemas;
 
+use App\Models\Billing\Fee;
 use App\Models\Core\Enrollment;
 use App\Models\Core\SchoolClass;
 use App\Models\Core\SchoolYear;
 use App\Models\Core\Student;
+use App\Services\Billing\StudentAccount;
 use Closure;
+use Filament\Forms\Components\CheckboxList;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Resources\RelationManagers\RelationManager;
@@ -39,6 +42,7 @@ class EnrollmentForm
                     ->searchable()
                     ->preload()
                     ->required()
+                    ->live()
                     ->rules([
                         fn (?Enrollment $record): Closure => static::classIsNotFull($record),
                         fn (Get $get, ?Enrollment $record, Component $livewire): Closure => static::studentIsNotAlreadyEnrolled(
@@ -50,7 +54,37 @@ class EnrollmentForm
                     ->label('Date d\'inscription')
                     ->default(now())
                     ->required(),
+                CheckboxList::make('optionalFees')
+                    ->label('Frais optionnels')
+                    ->relationship(
+                        'optionalFees',
+                        'name',
+                        modifyQueryUsing: fn (Builder $query, Get $get) => static::optionalFeesQuery($query, $get('school_class_id')),
+                    )
+                    ->getOptionLabelFromRecordUsing(fn (Fee $record): string => "{$record->name} (".StudentAccount::formatAmount($record->amount).')')
+                    ->visible(fn (Get $get): bool => static::optionalFeesQuery(Fee::query(), $get('school_class_id'))->exists())
+                    ->columnSpanFull(),
             ]);
+    }
+
+    /**
+     * Optional fees offered to the level of the chosen class, in its school year.
+     *
+     * @param  Builder<Fee>  $query
+     * @return Builder<Fee>
+     */
+    protected static function optionalFeesQuery(Builder $query, mixed $schoolClassId): Builder
+    {
+        $schoolClass = SchoolClass::find($schoolClassId);
+
+        if ($schoolClass === null) {
+            return $query->whereRaw('1 = 0');
+        }
+
+        return $query->forLevel($schoolClass->school_year_id, $schoolClass->level)
+            ->where('is_optional', true)
+            ->with('installments')
+            ->orderBy('name');
     }
 
     /**

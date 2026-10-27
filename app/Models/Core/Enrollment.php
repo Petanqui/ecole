@@ -3,12 +3,16 @@
 namespace App\Models\Core;
 
 use App\Enums\Grades\AdmissionExam;
+use App\Models\Billing\Fee;
 use App\Models\Grades\AdmissionExamScore;
 use Database\Factories\Core\EnrollmentFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 #[Fillable(['student_id', 'school_class_id', 'enrolled_on'])]
@@ -63,6 +67,35 @@ class Enrollment extends Model
     public function schoolClass(): BelongsTo
     {
         return $this->belongsTo(SchoolClass::class);
+    }
+
+    /**
+     * The optional fees (canteen, transport…) the student subscribed to.
+     *
+     * @return BelongsToMany<Fee, $this>
+     */
+    public function optionalFees(): BelongsToMany
+    {
+        return $this->belongsToMany(Fee::class)->where('is_optional', true);
+    }
+
+    /**
+     * The fees the student owes this year: the compulsory fees of their level and the optional
+     * fees they subscribed to, with their installments.
+     *
+     * @return Collection<int, Fee>
+     */
+    public function applicableFees(): Collection
+    {
+        return Fee::query()
+            ->forLevel($this->school_year_id, $this->schoolClass->level)
+            ->where(fn (Builder $query) => $query
+                ->where('is_optional', false)
+                ->orWhereHas('enrollments', fn (Builder $query) => $query->whereKey($this->getKey())))
+            ->with('installments')
+            ->orderBy('is_optional')
+            ->orderBy('name')
+            ->get();
     }
 
     /**

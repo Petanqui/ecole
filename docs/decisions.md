@@ -57,6 +57,17 @@
 - Clôturer un trimestre : les enseignants ne peuvent plus modifier les notes ; les parents voient alors le bulletin
 - Bulletin PDF (barryvdh/laravel-dompdf) ; en-tête de l'école via SCHOOL_* dans .env
 
+## Facturation
+- Montants en FCFA, entiers
+- Tarifs par année scolaire et par niveau (ou « tous les niveaux », ex. inscription), saisis dans Facturation → Tarifs
+- Chaque frais a un échéancier : une ou plusieurs tranches à date fixe ; montant du frais = somme des tranches
+- Frais obligatoire : dû par tous les élèves du niveau ; frais optionnel (cantine, transport…) : dû seulement par
+  les élèves inscrits à ce frais (cases à cocher sur l'inscription)
+- Ce qu'un élève doit est calculé à partir des tarifs actuels (rien n'est figé) : modifier un tarif modifie le dû
+  de tous les élèves concernés ; un élève inscrit en cours d'année doit toutes les tranches
+- Pas de réductions pour l'instant (fratrie, bourses, enfants du personnel : plus tard)
+- Moyens de paiement : espèces, Mobile Money (Orange, MTN, Moov, Wave), virement, chèque ; pas de paiement en ligne
+
 ## Hébergement
 - VPS en Europe, avec déclaration et demande d'autorisation de transfert à l'ARTCI
 - Fuseau horaire : Africa/Abidjan
