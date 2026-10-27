@@ -94,6 +94,8 @@
   une justification peut être retirée
 - Onglet « Absences » de l'inscription : liste et totaux par trimestre et pour l'année
 - Bulletin : « Assiduité du trimestre » = heures d'absence (dont justifiées) et nombre de retards
+- Portail : pour chaque enfant, heures d'absence de l'année (dont non justifiées) et retards, avec le détail ;
+  le parent ne justifie pas en ligne, il apporte le justificatif au secrétariat
 
 ## Hébergement
 - VPS en Europe, avec déclaration et demande d'autorisation de transfert à l'ARTCI

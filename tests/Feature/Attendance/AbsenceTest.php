@@ -5,14 +5,17 @@ use App\Enums\Core\GradeLevel;
 use App\Filament\Gestion\Resources\Attendance\Attendances\Pages\ManageAttendances;
 use App\Filament\Gestion\Resources\Core\Enrollments\Pages\EditEnrollment;
 use App\Filament\Gestion\Resources\Core\Enrollments\RelationManagers\AttendancesRelationManager;
+use App\Filament\Portail\Widgets\MyChildren;
 use App\Models\Attendance\Attendance;
 use App\Models\Attendance\AttendanceSession;
 use App\Models\Core\Enrollment;
+use App\Models\Core\Guardian;
 use App\Models\Grades\ClassSubject;
 use App\Models\Grades\Term;
 use App\Models\User;
 use App\Services\Attendance\AttendanceSummary;
 use Filament\Actions\Testing\TestAction;
+use Filament\Facades\Filament;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
 
@@ -101,6 +104,24 @@ test('the enrollment shows the absences of the student with the totals of each t
         ->assertCanSeeTableRecords([$own])
         ->assertCanNotSeeTableRecords([$other])
         ->assertSee("1er trimestre : 2 h d'absence — aucun retard");
+});
+
+test('a parent sees the absences of their child with their justification', function () {
+    noteAttendance($this->maths, $this->firstTerm, $this->awa, AttendanceStatus::Absent, hours: 2, heldOn: '2026-10-19')
+        ->justify(User::factory()->create(), 'Certificat médical');
+    noteAttendance($this->maths, $this->firstTerm, $this->awa, AttendanceStatus::Absent, hours: 1, heldOn: '2026-10-20');
+    noteAttendance($this->maths, $this->firstTerm, $this->awa, AttendanceStatus::Late, heldOn: '2026-10-21');
+    $parent = User::factory()->guardian()->create();
+    Guardian::factory()->for($this->awa->student->family)->for($parent)->create();
+
+    Filament::setCurrentPanel('portail');
+    $this->actingAs($parent);
+
+    Livewire::test(MyChildren::class)
+        ->assertSee('3 h')
+        ->assertSee('dont 1 h non justifiée(s) · 1 retard')
+        ->mountAction(TestAction::make('attendance')->table($this->awa->student))
+        ->assertMountedActionModalSee(['Certificat médical', 'Non justifiée', '19/10/2026', 'En retard']);
 });
 
 test('teachers cannot see the absences list', function () {
