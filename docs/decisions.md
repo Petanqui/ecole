@@ -114,6 +114,9 @@
   un enseignant ne voit que les siennes
 - Lu / non lu propre à chaque utilisateur ; ouvrir une conversation la marque lue ; nombre de non lues dans le menu
 - Une conversation et ses messages ne se suppriment pas
+- Portail → Messages : le parent lit et répond aux conversations de sa famille (tous les parents de la famille
+  voient les mêmes) ; il écrit à l'administration ou à un enseignant d'une classe de ses enfants cette année,
+  éventuellement au sujet d'un enfant
 
 ## Hébergement
 - VPS en Europe, avec déclaration et demande d'autorisation de transfert à l'ARTCI

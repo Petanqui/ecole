@@ -16,7 +16,8 @@ use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Database\Eloquent\Collection;
 
 /**
- * A conversation with a family: its messages, and the reply box. Opening it marks it as read.
+ * A conversation between a family and the school: its messages, and the reply box. Opening it marks it as read.
+ * The parent portal uses it too, with its own resource.
  *
  * @property-read Schema $form
  */
@@ -26,7 +27,7 @@ class ViewConversation extends Page
 
     protected static string $resource = ConversationResource::class;
 
-    protected string $view = 'filament.gestion.resources.messaging.view-conversation';
+    protected string $view = 'filament.messaging.view-conversation';
 
     /**
      * @var array{body?: string|null}
@@ -101,7 +102,7 @@ class ViewConversation extends Page
             Action::make('back')
                 ->label('Retour aux messages')
                 ->color('gray')
-                ->url(ConversationResource::getUrl()),
+                ->url(static::getResource()::getUrl()),
         ];
     }
 

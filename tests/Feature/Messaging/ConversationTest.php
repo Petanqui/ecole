@@ -4,6 +4,9 @@ use App\Enums\Core\GradeLevel;
 use App\Filament\Gestion\Resources\Messaging\Conversations\ConversationResource;
 use App\Filament\Gestion\Resources\Messaging\Conversations\Pages\ManageConversations;
 use App\Filament\Gestion\Resources\Messaging\Conversations\Pages\ViewConversation;
+use App\Filament\Portail\Resources\Conversations\ConversationResource as PortalConversationResource;
+use App\Filament\Portail\Resources\Conversations\Pages\ManageConversations as PortalManageConversations;
+use App\Filament\Portail\Resources\Conversations\Pages\ViewConversation as PortalViewConversation;
 use App\Models\Core\Enrollment;
 use App\Models\Core\Guardian;
 use App\Models\Core\SchoolClass;
@@ -12,6 +15,7 @@ use App\Models\Grades\ClassSubject;
 use App\Models\Messaging\Conversation;
 use App\Models\User;
 use Filament\Actions\CreateAction;
+use Filament\Facades\Filament;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
 
@@ -93,6 +97,58 @@ test('a message from a parent is unread until opened, then the school replies', 
         ->body->toBe('Merci, apportez le certificat au secrétariat.')
         ->author_id->toBe($staff->id)
         ->and(Conversation::unreadBy($this->parent)->exists())->toBeTrue();
+});
+
+test('a parent writes to a teacher of their child, who then has an unread message', function () {
+    $otherTeacher = User::factory()->teacher()->create();
+    ClassSubject::factory()->for($this->cm2)->create(['teacher_id' => $otherTeacher->id]);
+    Filament::setCurrentPanel('portail');
+    $this->actingAs($this->parent);
+
+    expect(array_keys(PortalConversationResource::recipientOptions()))->toBe(['administration', $this->teacher->id]);
+
+    $write = fn (string|int $recipient) => Livewire::test(PortalManageConversations::class)
+        ->callAction(CreateAction::class, data: [
+            'recipient' => $recipient,
+            'student_id' => $this->awa->id,
+            'subject' => 'Devoirs',
+            'body' => 'Bonjour, Awa n\'a pas compris l\'exercice 3.',
+        ]);
+
+    $write($otherTeacher->id)->assertHasActionErrors(['recipient']);
+    $write($this->teacher->id)->assertHasNoActionErrors();
+
+    $conversation = Conversation::sole();
+    expect($conversation)
+        ->family_id->toBe($this->awa->family_id)
+        ->teacher_id->toBe($this->teacher->id)
+        ->and(Conversation::visibleTo($this->teacher)->unreadBy($this->teacher)->pluck('id')->all())->toBe([$conversation->id])
+        ->and(Conversation::unreadBy($this->parent)->exists())->toBeFalse();
+});
+
+test('a parent reads and answers the conversations of their family only', function () {
+    $own = Conversation::factory()->for($this->awa->family)->create();
+    $own->send(User::factory()->create(), 'Réunion samedi à 9 h.');
+    $other = Conversation::factory()->for($this->fatou->family)->create();
+    Filament::setCurrentPanel('portail');
+    $this->actingAs($this->parent);
+
+    expect(PortalConversationResource::getNavigationBadge())->toBe('1');
+
+    Livewire::test(PortalManageConversations::class)
+        ->assertCanSeeTableRecords([$own])
+        ->assertCanNotSeeTableRecords([$other]);
+
+    Livewire::test(PortalViewConversation::class, ['record' => $own->getKey()])
+        ->assertSee('Réunion samedi à 9 h.')
+        ->fillForm(['body' => 'Bien noté, merci.'])
+        ->call('send')
+        ->assertHasNoFormErrors();
+
+    expect(PortalConversationResource::getNavigationBadge())->toBeNull()
+        ->and($own->messages()->latest('id')->first()->author_id)->toBe($this->parent->id);
+
+    $this->get(PortalConversationResource::getUrl('view', ['record' => $other]))->assertNotFound();
 });
 
 test('every staff member has their own unread messages', function () {
