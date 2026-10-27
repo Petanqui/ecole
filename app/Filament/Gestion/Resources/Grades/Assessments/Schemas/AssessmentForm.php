@@ -77,16 +77,7 @@ class AssessmentForm
         /** @var User $user */
         $user = auth()->user();
 
-        return ClassSubject::query()
-            ->with(['schoolClass', 'subject'])
-            ->whereRelation('schoolClass.schoolYear', 'is_current', true)
-            ->when(! $user->isStaffMember(), fn ($query) => $query->where('teacher_id', $user->getKey()))
-            ->get()
-            ->sortBy(fn (ClassSubject $classSubject): string => $classSubject->schoolClass->name.' '.str_pad((string) $classSubject->subject->sort_order, 3, '0', STR_PAD_LEFT))
-            ->mapWithKeys(fn (ClassSubject $classSubject): array => [
-                $classSubject->id => "{$classSubject->schoolClass->name} — {$classSubject->subject->name}",
-            ])
-            ->all();
+        return ClassSubject::currentYearOptionsFor($user);
     }
 
     /**
@@ -102,13 +93,7 @@ class AssessmentForm
             return [];
         }
 
-        return Term::query()
-            ->where('school_year_id', $schoolYearId)
-            ->where('is_closed', false)
-            ->orderBy('number')
-            ->get()
-            ->mapWithKeys(fn (Term $term): array => [$term->id => $term->name])
-            ->all();
+        return Term::openOptions($schoolYearId);
     }
 
     /**

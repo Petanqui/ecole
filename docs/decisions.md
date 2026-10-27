@@ -80,6 +80,16 @@
 - Retard = montant des tranches échues à la date − total payé
 - Portail : pour chaque enfant, reste à payer (et retard), échéancier, paiements et téléchargement des reçus
 
+## Présences
+- Appel par heure de cours (primaire et secondaire) : classe + matière, date, heure de début, durée en heures,
+  rattaché à un trimestre ouvert (Présences → Appels) ; pas d'emploi du temps pour l'instant
+- Une classe ne peut pas avoir deux appels qui se chevauchent le même jour
+- Chaque élève est Présent(e), Absent(e) ou En retard ; seuls les absences et retards sont enregistrés
+  (un élève sans ligne pour un appel était présent)
+- Le personnel fait tous les appels ; un enseignant ceux de ses matières, et ne peut plus les modifier
+  une fois le trimestre clôturé
+- Une justification déjà acceptée est conservée si l'on passe d'absent à en retard (ou l'inverse)
+
 ## Hébergement
 - VPS en Europe, avec déclaration et demande d'autorisation de transfert à l'ARTCI
 - Fuseau horaire : Africa/Abidjan

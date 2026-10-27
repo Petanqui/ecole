@@ -38,6 +38,22 @@ class Term extends Model
     }
 
     /**
+     * The terms of the school year that are not closed, first one first.
+     *
+     * @return array<int, string>
+     */
+    public static function openOptions(int $schoolYearId): array
+    {
+        return static::query()
+            ->where('school_year_id', $schoolYearId)
+            ->where('is_closed', false)
+            ->orderBy('number')
+            ->get()
+            ->mapWithKeys(fn (Term $term): array => [$term->id => $term->name])
+            ->all();
+    }
+
+    /**
      * "1er trimestre", "2e trimestre", "3e trimestre".
      *
      * @return Attribute<string, never>

@@ -3,6 +3,7 @@
 namespace App\Models\Core;
 
 use App\Enums\Grades\AdmissionExam;
+use App\Models\Attendance\Attendance;
 use App\Models\Billing\Fee;
 use App\Models\Billing\Payment;
 use App\Models\Grades\AdmissionExamScore;
@@ -76,6 +77,16 @@ class Enrollment extends Model
     public function payments(): HasMany
     {
         return $this->hasMany(Payment::class);
+    }
+
+    /**
+     * The roll calls at which the student was absent or late.
+     *
+     * @return HasMany<Attendance, $this>
+     */
+    public function attendances(): HasMany
+    {
+        return $this->hasMany(Attendance::class);
     }
 
     /**

@@ -54,4 +54,24 @@ class ClassSubject extends Model
     {
         return $this->belongsTo(User::class, 'teacher_id');
     }
+
+    /**
+     * "6e1 — Mathématiques" for the subjects of current-year classes, by class then programme order,
+     * limited to their own subjects for a teacher.
+     *
+     * @return array<int, string>
+     */
+    public static function currentYearOptionsFor(User $user): array
+    {
+        return static::query()
+            ->with(['schoolClass', 'subject'])
+            ->whereRelation('schoolClass.schoolYear', 'is_current', true)
+            ->when(! $user->isStaffMember(), fn ($query) => $query->where('teacher_id', $user->getKey()))
+            ->get()
+            ->sortBy(fn (ClassSubject $classSubject): string => $classSubject->schoolClass->name.' '.str_pad((string) $classSubject->subject->sort_order, 3, '0', STR_PAD_LEFT))
+            ->mapWithKeys(fn (ClassSubject $classSubject): array => [
+                $classSubject->id => "{$classSubject->schoolClass->name} — {$classSubject->subject->name}",
+            ])
+            ->all();
+    }
 }
