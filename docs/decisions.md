@@ -41,6 +41,16 @@
 - Primaire : moyenne de matière = total des points / total des barèmes, ramené sur 10
   (une composition sur 50 pèse 5 fois une note sur 10) ; tous les coefficients à 1
 - Rôle Enseignant : accès à /gestion limité à la saisie des notes de ses matières dans ses classes
+- Moyenne générale = Σ (moyenne matière × coef) / Σ coef, sur les matières où l'élève a au moins une note
+- Rang : ex æquo à moyenne égale (arrondie à 2 décimales), rang suivant sauté (1er, 2e, 2e ex æquo, 4e)
+- Moyenne annuelle = (T1 + 2×T2 + 2×T3) / 5, sur les trimestres où l'élève a une moyenne
+  (formule donnée pour le secondaire, appliquée aussi au primaire : À CONFIRMER)
+- Distinctions (sur 20, ramenées sur 10 au primaire) : Félicitations ≥ 16, Encouragements ≥ 14,
+  Tableau d'honneur ≥ 12, Avertissement < 8,5 ; sur le bulletin du 3e trimestre, elles portent sur la moyenne annuelle
+- Appréciations par matière : Excellent ≥ 18, Très bien ≥ 16, Bien ≥ 14, Assez bien ≥ 12, Passable ≥ 10,
+  Insuffisant ≥ 8, Faible < 8 (config/grades.php)
+- Clôturer un trimestre : les enseignants ne peuvent plus modifier les notes ; les parents voient alors le bulletin
+- Bulletin PDF (barryvdh/laravel-dompdf) ; en-tête de l'école via SCHOOL_* dans .env
 
 ## Hébergement
 - VPS en Europe, avec déclaration et demande d'autorisation de transfert à l'ARTCI

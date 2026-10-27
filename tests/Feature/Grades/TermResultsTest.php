@@ -1,54 +1,12 @@
 <?php
 
 use App\Enums\Core\GradeLevel;
-use App\Models\Core\Enrollment;
-use App\Models\Core\SchoolClass;
-use App\Models\Core\Student;
-use App\Models\Grades\Assessment;
-use App\Models\Grades\ClassSubject;
-use App\Models\Grades\Subject;
-use App\Models\Grades\Term;
 use App\Services\Grades\TermResults;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
 
-/**
- * No standard subjects are seeded here, so new classes start with an empty programme
- * and each test builds exactly the programme it needs.
- */
-function classWithStudents(GradeLevel $level, int $studentCount): array
-{
-    $schoolClass = SchoolClass::factory()->create(['level' => $level, 'section' => 'A']);
-    $students = Student::factory()->count($studentCount)->create()
-        ->each(fn (Student $student) => Enrollment::factory()->for($student)->for($schoolClass)->create());
-
-    return [$schoolClass, $students, $schoolClass->schoolYear->terms->first()];
-}
-
-function addSubject(SchoolClass $schoolClass, int $coefficient, int $sortOrder = 0): ClassSubject
-{
-    return $schoolClass->classSubjects()->create([
-        'subject_id' => Subject::factory()->create(['sort_order' => $sortOrder])->id,
-        'coefficient' => $coefficient,
-    ]);
-}
-
-/**
- * @param  array<int, float|string|null>  $scores  student id => score, or 'absent'
- */
-function giveMarks(ClassSubject $classSubject, Term $term, int $maxScore, array $scores): Assessment
-{
-    $assessment = Assessment::factory()->for($classSubject)->for($term)->create(['max_score' => $maxScore]);
-
-    foreach ($scores as $studentId => $score) {
-        $assessment->marks()->where('student_id', $studentId)->update(
-            $score === 'absent' ? ['is_absent' => true, 'score' => null] : ['score' => $score],
-        );
-    }
-
-    return $assessment;
-}
+// classWithStudents(), addSubject() and giveMarks() are defined in tests/Pest.php.
 
 test('secondary averages bring every mark back to 20 and weigh subjects by coefficient', function () {
     [$schoolClass, $students, $term] = classWithStudents(GradeLevel::Sixieme, 3);

@@ -39,6 +39,37 @@ return [
         'EPS' => 'Éducation physique et sportive',
     ],
 
+    /*
+    | Annual average = sum(term average × weight) / sum(weights), over the terms that have
+    | an average: (T1 + 2×T2 + 2×T3) / 5.
+    */
+    'annual_term_weights' => [1 => 1, 2 => 2, 3 => 2],
+
+    /*
+    | Thresholds are on a scale of 20 and are scaled down for primary school (out of 10).
+    | Each list is checked from the top: the first threshold reached wins.
+    */
+    'distinctions' => [
+        'Félicitations' => 16,
+        'Encouragements' => 14,
+        'Tableau d\'honneur' => 12,
+    ],
+
+    'warning' => [
+        'label' => 'Avertissement',
+        'below' => 8.5,
+    ],
+
+    'appreciations' => [
+        'Excellent' => 18,
+        'Très bien' => 16,
+        'Bien' => 14,
+        'Assez bien' => 12,
+        'Passable' => 10,
+        'Insuffisant' => 8,
+        'Faible' => 0,
+    ],
+
     'programmes' => [
         'primary' => ['DICT' => 1, 'FR' => 1, 'MATH' => 1, 'SCI' => 1, 'HG' => 1, 'EDHC' => 1, 'ANG' => 1, 'ART' => 1, 'EPS' => 1],
 

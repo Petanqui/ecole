@@ -120,12 +120,38 @@ class TermResultsPage extends Page implements HasTable
                     ->weight('bold')
                     ->alignCenter()
                     ->placeholder('—'),
+            ])
+            ->recordActions([
+                Action::make('reportCard')
+                    ->label('Bulletin')
+                    ->icon(Heroicon::OutlinedDocumentText)
+                    ->visible(fn (): bool => auth()->user()->can('print-class-report-cards'))
+                    ->url(fn (array $record): string => $this->reportCardsUrl(['student' => $record['id']]))
+                    ->openUrlInNewTab(),
             ]);
+    }
+
+    /**
+     * @param  array<string, int>  $query
+     */
+    protected function reportCardsUrl(array $query = []): string
+    {
+        return route('filament.gestion.report-cards.class', [
+            'schoolClass' => $this->selection['school_class_id'],
+            'term' => $this->selection['term_id'],
+            ...$query,
+        ]);
     }
 
     protected function getHeaderActions(): array
     {
         return [
+            Action::make('printReportCards')
+                ->label('Bulletins de la classe (PDF)')
+                ->icon(Heroicon::OutlinedPrinter)
+                ->visible(fn (): bool => $this->results() !== null && auth()->user()->can('print-class-report-cards'))
+                ->url(fn (): string => $this->reportCardsUrl())
+                ->openUrlInNewTab(),
             Action::make('toggleTermClosure')
                 ->label(fn (): string => ($this->selectedTerm()?->is_closed ? 'Rouvrir le ' : 'Clôturer le ').$this->selectedTerm()?->name)
                 ->icon(fn (): Heroicon => $this->selectedTerm()?->is_closed ? Heroicon::OutlinedLockOpen : Heroicon::OutlinedLockClosed)
@@ -189,7 +215,7 @@ class TermResultsPage extends Page implements HasTable
     }
 
     /**
-     * @return array<int, array<string, string|null>>
+     * @return array<int, array<string, int|string|null>>
      */
     protected function rows(): array
     {
@@ -201,6 +227,7 @@ class TermResultsPage extends Page implements HasTable
 
         return $results->students->map(function (array $row) use ($results): array {
             $cells = [
+                'id' => $row['student']->getKey(),
                 'rank' => $row['rank'] === null ? null : TermResults::formatRank($row['rank'], $row['is_tied']),
                 'student' => $row['student']->full_name,
                 'average' => TermResults::formatAverage($row['average']),

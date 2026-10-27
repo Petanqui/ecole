@@ -55,7 +55,7 @@ class TermResults
         $this->gradingScale = $schoolClass->level->gradingScale();
 
         $this->subjects = $schoolClass->classSubjects()
-            ->with('subject')
+            ->with(['subject', 'teacher'])
             ->get()
             ->sortBy('subject.sort_order')
             ->values();
@@ -203,7 +203,7 @@ class TermResults
      * @param  Collection<int, ?float>  $averages  keyed by student id
      * @return array{ranks: array<int, int>, tied: array<int, int>}
      */
-    protected static function rank(Collection $averages): array
+    public static function rank(Collection $averages): array
     {
         $sorted = $averages->filter(fn (?float $average): bool => $average !== null)->sortDesc();
 
@@ -229,7 +229,7 @@ class TermResults
      * @param  Collection<int, ?float>  $averages
      * @return array{average: ?float, highest: ?float, lowest: ?float}
      */
-    protected static function statistics(Collection $averages): array
+    public static function statistics(Collection $averages): array
     {
         $averages = $averages->filter(fn (?float $average): bool => $average !== null);
 

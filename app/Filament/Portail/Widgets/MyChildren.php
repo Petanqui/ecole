@@ -2,14 +2,19 @@
 
 namespace App\Filament\Portail\Widgets;
 
+use App\Models\Core\SchoolYear;
 use App\Models\Core\Student;
+use App\Models\Grades\Term;
+use Filament\Actions\Action;
+use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Filament\Widgets\TableWidget;
 use Illuminate\Database\Eloquent\Builder;
 
 /**
- * The children of the signed-in parent's family, with their class for the current school year.
+ * The children of the signed-in parent's family, with their class for the current school year
+ * and their report cards for the terms that are closed.
  */
 class MyChildren extends TableWidget
 {
@@ -19,6 +24,8 @@ class MyChildren extends TableWidget
 
     public function table(Table $table): Table
     {
+        $closedTerms = SchoolYear::current()->first()?->terms->where('is_closed', true) ?? collect();
+
         return $table
             ->query(fn (): Builder => Student::query()
                 ->whereRelation('family.guardians', 'user_id', auth()->id())
@@ -38,6 +45,14 @@ class MyChildren extends TableWidget
                 TextColumn::make('birth_date')
                     ->label('Né(e) le')
                     ->date('d/m/Y'),
-            ]);
+            ])
+            ->recordActions($closedTerms->map(fn (Term $term): Action => Action::make("reportCard{$term->number}")
+                ->label("Bulletin {$term->name}")
+                ->icon(Heroicon::OutlinedDocumentArrowDown)
+                ->visible(fn (Student $record): bool => $record->currentEnrollment !== null)
+                ->url(fn (Student $record): string => route('filament.portail.report-cards.student', ['student' => $record, 'term' => $term]))
+                ->openUrlInNewTab())
+                ->values()
+                ->all());
     }
 }
