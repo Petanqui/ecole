@@ -93,6 +93,7 @@ test('the CM2 report card of the third term shows the MAP and the decision', fun
     $html = view('grades.report-card', [
         'results' => $results,
         'annual' => new AnnualResults($this->schoolClass),
+        'attendance' => collect(),
         'rows' => $results->students->only([$this->awa->id]),
         'schoolClass' => $this->schoolClass,
         'term' => $thirdTerm,

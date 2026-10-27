@@ -89,6 +89,11 @@
 - Le personnel fait tous les appels ; un enseignant ceux de ses matières, et ne peut plus les modifier
   une fois le trimestre clôturé
 - Une justification déjà acceptée est conservée si l'on passe d'absent à en retard (ou l'inverse)
+- Heures d'absence = durée des cours manqués ; un retard compte comme un retard, pas en heures
+- Seul le personnel justifie (Présences → Absences et retards), avec un motif, une ou plusieurs absences à la fois ;
+  une justification peut être retirée
+- Onglet « Absences » de l'inscription : liste et totaux par trimestre et pour l'année
+- Bulletin : « Assiduité du trimestre » = heures d'absence (dont justifiées) et nombre de retards
 
 ## Hébergement
 - VPS en Europe, avec déclaration et demande d'autorisation de transfert à l'ARTCI

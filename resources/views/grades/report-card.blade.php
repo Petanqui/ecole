@@ -153,6 +153,8 @@
                     @endif
                 </td>
                 <td>
+                    <div class="label">Assiduité du trimestre</div>
+                    <div style="margin-bottom: 8px;"><strong>{{ $attendance->get($studentId)?->describe() ?? 'Aucune absence — aucun retard' }}</strong></div>
                     <div class="label">Distinction / sanction</div>
                     <div class="distinction">{{ Appreciation::distinction($annualRow['average'] ?? $row['average'], $scale) ?? '—' }}</div>
                     <div class="label" style="margin-top: 8px;">Observations du conseil de classe</div>

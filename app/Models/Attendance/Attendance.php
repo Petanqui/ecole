@@ -61,4 +61,33 @@ class Attendance extends Model
     {
         return $this->justified_at !== null;
     }
+
+    /**
+     * Accept the reason given for the absence or the late arrival (medical certificate, family event…).
+     */
+    public function justify(User $user, string $reason): void
+    {
+        $this->forceFill([
+            'justification' => $reason,
+            'justified_at' => now(),
+            'justified_by' => $user->getKey(),
+        ])->save();
+    }
+
+    public function unjustify(): void
+    {
+        $this->forceFill([
+            'justification' => null,
+            'justified_at' => null,
+            'justified_by' => null,
+        ])->save();
+    }
+
+    /**
+     * Hours missed: the length of the lesson for an absence, none for a late arrival.
+     */
+    public function missedHours(): int
+    {
+        return $this->status === AttendanceStatus::Absent ? $this->session->hours : 0;
+    }
 }

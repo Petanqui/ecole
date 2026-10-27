@@ -1,10 +1,13 @@
 <?php
 
+use App\Enums\Attendance\AttendanceStatus;
 use App\Enums\Core\GradeLevel;
+use App\Models\Attendance\AttendanceSession;
 use App\Models\Core\Guardian;
 use App\Models\Core\SchoolYear;
 use App\Models\Core\Student;
 use App\Models\User;
+use App\Services\Attendance\AttendanceSummary;
 use App\Services\Grades\AnnualResults;
 use App\Services\Grades\TermResults;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -91,12 +94,15 @@ test('staff print the report card of a single student', function () {
         ->assertHeader('content-type', 'application/pdf');
 });
 
-test('the report card shows averages, ranks, appreciations and the distinction', function () {
+test('the report card shows averages, ranks, appreciations, the distinction and attendance', function () {
     $results = new TermResults($this->schoolClass, $this->firstTerm);
+    $session = AttendanceSession::factory()->for($this->maths)->for($this->firstTerm)->create(['hours' => 2]);
+    $session->mark($this->schoolClass->enrollments()->where('student_id', $this->awa->id)->sole(), AttendanceStatus::Absent);
 
     $html = view('grades.report-card', [
         'results' => $results,
         'annual' => null,
+        'attendance' => AttendanceSummary::forClass($this->schoolClass, $this->firstTerm),
         'rows' => $results->students->only([$this->awa->id]),
         'schoolClass' => $this->schoolClass,
         'term' => $this->firstTerm,
@@ -110,6 +116,7 @@ test('the report card shows averages, ranks, appreciations and the distinction',
         ->toContain('1er')
         ->toContain('Bien')
         ->toContain('Encouragements')
+        ->toContain('2 h d&#039;absence — aucun retard')
         ->not->toContain($this->yao->full_name);
 });
 

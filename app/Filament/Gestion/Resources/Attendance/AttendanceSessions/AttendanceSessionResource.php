@@ -20,7 +20,7 @@ class AttendanceSessionResource extends Resource
 {
     protected static ?string $model = AttendanceSession::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedClipboardDocumentCheck;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedHandRaised;
 
     protected static string|UnitEnum|null $navigationGroup = 'Présences';
 

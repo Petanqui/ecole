@@ -7,6 +7,7 @@ use App\Models\Core\Enrollment;
 use App\Models\Core\SchoolClass;
 use App\Models\Core\Student;
 use App\Models\Grades\Term;
+use App\Services\Attendance\AttendanceSummary;
 use App\Services\Grades\AnnualResults;
 use App\Services\Grades\TermResults;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -68,6 +69,7 @@ class ReportCardController extends Controller
         return Pdf::loadView('grades.report-card', [
             'results' => $results,
             'annual' => $annual,
+            'attendance' => AttendanceSummary::forClass($schoolClass, $term),
             'rows' => $rows,
             'schoolClass' => $schoolClass,
             'term' => $term,
