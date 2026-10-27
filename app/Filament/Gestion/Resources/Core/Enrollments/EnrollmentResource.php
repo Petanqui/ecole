@@ -6,6 +6,7 @@ use App\Filament\Gestion\Concerns\RestrictedToStaffMembers;
 use App\Filament\Gestion\Resources\Core\Enrollments\Pages\CreateEnrollment;
 use App\Filament\Gestion\Resources\Core\Enrollments\Pages\EditEnrollment;
 use App\Filament\Gestion\Resources\Core\Enrollments\Pages\ListEnrollments;
+use App\Filament\Gestion\Resources\Core\Enrollments\RelationManagers\PaymentsRelationManager;
 use App\Filament\Gestion\Resources\Core\Enrollments\Schemas\EnrollmentForm;
 use App\Filament\Gestion\Resources\Core\Enrollments\Tables\EnrollmentsTable;
 use App\Models\Core\Enrollment;
@@ -45,7 +46,7 @@ class EnrollmentResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            PaymentsRelationManager::class,
         ];
     }
 

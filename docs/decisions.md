@@ -67,6 +67,14 @@
   de tous les élèves concernés ; un élève inscrit en cours d'année doit toutes les tranches
 - Pas de réductions pour l'instant (fratrie, bourses, enfants du personnel : plus tard)
 - Moyens de paiement : espèces, Mobile Money (Orange, MTN, Moov, Wave), virement, chèque ; pas de paiement en ligne
+- Référence obligatoire pour tout paiement autre qu'en espèces (ID de transaction, n° de virement ou de chèque)
+- Un paiement ne peut pas dépasser le reste à payer de l'année
+- Les paiements règlent les tranches dans l'ordre des échéances (la plus ancienne d'abord)
+- Reçu PDF (A5) numéroté REC-AAAA-NNNNN (AAAA = année civile, numérotation sans doublon), montant en lettres
+  (extension PHP intl requise en production) et reste à payer après ce paiement
+- Un paiement ne se modifie ni ne se supprime : un administrateur l'annule avec un motif, il reste visible
+  (« annulé ») et ne compte plus ; on saisit alors le bon paiement
+- Compte de l'élève : onglet « Compte » de l'inscription (paiements, échéancier, solde, retard)
 
 ## Hébergement
 - VPS en Europe, avec déclaration et demande d'autorisation de transfert à l'ARTCI

@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Models\Billing\Payment;
 use App\Models\Core\Student;
 use App\Models\Grades\Term;
 use App\Models\User;
@@ -24,6 +25,24 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->defineReportCardAbilities();
+        $this->defineBillingAbilities();
+    }
+
+    /**
+     * Staff record payments; only administrators cancel one. A parent downloads the receipts
+     * of their own children.
+     */
+    protected function defineBillingAbilities(): void
+    {
+        Gate::define('cancel-payment', fn (User $user, Payment $payment): bool => $user->isAdmin() && ! $payment->isCancelled());
+
+        Gate::define('download-receipt', function (User $user, Payment $payment): bool {
+            if ($user->isStaffMember()) {
+                return true;
+            }
+
+            return $payment->enrollment->student->family->guardians()->where('user_id', $user->getKey())->exists();
+        });
     }
 
     /**

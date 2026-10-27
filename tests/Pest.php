@@ -1,8 +1,10 @@
 <?php
 
 use App\Enums\Core\GradeLevel;
+use App\Models\Billing\Fee;
 use App\Models\Core\Enrollment;
 use App\Models\Core\SchoolClass;
+use App\Models\Core\SchoolYear;
 use App\Models\Core\Student;
 use App\Models\Grades\Assessment;
 use App\Models\Grades\ClassSubject;
@@ -91,4 +93,18 @@ function giveMarks(ClassSubject $classSubject, Term $term, int $maxScore, array 
     }
 
     return $assessment;
+}
+
+/**
+ * @param  array<string, int>  $installments  due date => amount
+ */
+function createFee(SchoolYear $schoolYear, ?GradeLevel $level, string $name, array $installments, bool $isOptional = false): Fee
+{
+    $fee = Fee::factory()->for($schoolYear)->create(['level' => $level, 'name' => $name, 'is_optional' => $isOptional]);
+
+    foreach ($installments as $dueOn => $amount) {
+        $fee->installments()->create(['due_on' => $dueOn, 'amount' => $amount]);
+    }
+
+    return $fee;
 }

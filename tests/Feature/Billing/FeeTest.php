@@ -25,20 +25,6 @@ beforeEach(function () {
     $this->enrollment = Enrollment::factory()->for($this->sixieme)->create();
 });
 
-/**
- * @param  array<string, int>  $installments  due date => amount
- */
-function createFee(SchoolYear $schoolYear, ?GradeLevel $level, string $name, array $installments, bool $isOptional = false): Fee
-{
-    $fee = Fee::factory()->for($schoolYear)->create(['level' => $level, 'name' => $name, 'is_optional' => $isOptional]);
-
-    foreach ($installments as $dueOn => $amount) {
-        $fee->installments()->create(['due_on' => $dueOn, 'amount' => $amount]);
-    }
-
-    return $fee;
-}
-
 test('a student owes the fees of their level, the fees of every level and their optional fees', function () {
     createFee($this->schoolYear, GradeLevel::Sixieme, 'Frais de scolarité', ['2027-01-15' => 50000, '2026-10-15' => 60000, '2027-04-15' => 40000]);
     createFee($this->schoolYear, null, 'Inscription', ['2026-09-15' => 15000]);

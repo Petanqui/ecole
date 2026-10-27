@@ -4,6 +4,7 @@ namespace App\Models\Core;
 
 use App\Enums\Grades\AdmissionExam;
 use App\Models\Billing\Fee;
+use App\Models\Billing\Payment;
 use App\Models\Grades\AdmissionExamScore;
 use Database\Factories\Core\EnrollmentFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -67,6 +68,14 @@ class Enrollment extends Model
     public function schoolClass(): BelongsTo
     {
         return $this->belongsTo(SchoolClass::class);
+    }
+
+    /**
+     * @return HasMany<Payment, $this>
+     */
+    public function payments(): HasMany
+    {
+        return $this->hasMany(Payment::class);
     }
 
     /**
