@@ -41,9 +41,18 @@ return [
 
     /*
     | Annual average = sum(term average × weight) / sum(weights), over the terms that have
-    | an average: (T1 + 2×T2 + 2×T3) / 5.
+    | an average. Primary (MENA guide): (T1 + T2 + T3) / 3 ; secondary: (T1 + 2×T2 + 2×T3) / 5.
     */
-    'annual_term_weights' => [1 => 1, 2 => 2, 3 => 2],
+    'annual_term_weights' => [
+        'primary' => [1 => 1, 2 => 1, 3 => 1],
+        'secondary' => [1 => 1, 2 => 2, 3 => 2],
+    ],
+
+    /*
+    | Primary classes from CP1 to CM1 move up when the annual average reaches this mark (out of 10).
+    | CM2 is an exam class: admission to 6e depends on its own exam average.
+    */
+    'primary_passing_average' => 5,
 
     /*
     | Thresholds are on a scale of 20 and are scaled down for primary school (out of 10).

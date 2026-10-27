@@ -140,6 +140,9 @@
                             @endforeach
                             <div>Moyenne annuelle : <span class="big">{{ $average($annualRow['average']) }} / {{ $scale }}</span></div>
                             <div>Rang annuel : <strong>{{ $rank($annualRow['rank'], $annualRow['is_tied']) }}</strong></div>
+                            @if ($annualRow['is_promoted'] !== null)
+                                <div>Décision : <strong>{{ $annualRow['is_promoted'] ? 'Admis(e) en classe supérieure' : 'Redouble' }}</strong></div>
+                            @endif
                         </div>
                     @endif
                 </td>

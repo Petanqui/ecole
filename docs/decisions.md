@@ -43,8 +43,12 @@
 - Rôle Enseignant : accès à /gestion limité à la saisie des notes de ses matières dans ses classes
 - Moyenne générale = Σ (moyenne matière × coef) / Σ coef, sur les matières où l'élève a au moins une note
 - Rang : ex æquo à moyenne égale (arrondie à 2 décimales), rang suivant sauté (1er, 2e, 2e ex æquo, 4e)
-- Moyenne annuelle = (T1 + 2×T2 + 2×T3) / 5, sur les trimestres où l'élève a une moyenne
-  (formule donnée pour le secondaire, appliquée aussi au primaire : À CONFIRMER)
+- Moyenne annuelle, sur les trimestres où l'élève a une moyenne :
+  - secondaire : (T1 + 2×T2 + 2×T3) / 5
+  - primaire (guide MENA) : (T1 + T2 + T3) / 3 ; de CP1 à CM1, passage en classe supérieure si ≥ 5/10
+    (affiché comme décision sur le bulletin du 3e trimestre)
+  - CM2 : moyenne d'admission en 6e (MAP) = (Compo régionale 1 + 2 + Examen blanc 1 + 2) / 4, ≥ 10/20 :
+    pas encore gérée (saisie de ces épreuves à définir)
 - Distinctions (sur 20, ramenées sur 10 au primaire) : Félicitations ≥ 16, Encouragements ≥ 14,
   Tableau d'honneur ≥ 12, Avertissement < 8,5 ; sur le bulletin du 3e trimestre, elles portent sur la moyenne annuelle
 - Appréciations par matière : Excellent ≥ 18, Très bien ≥ 16, Bien ≥ 14, Assez bien ≥ 12, Passable ≥ 10,

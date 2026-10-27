@@ -46,6 +46,35 @@ test('the annual average weighs terms 2 and 3 double', function () {
         ->rank->toBe(1);
 });
 
+test('in primary school the annual average is the plain mean of the terms', function () {
+    [$schoolClass, $students, $term1] = classWithStudents(GradeLevel::Ce2, 2);
+    [, $term2, $term3] = $schoolClass->schoolYear->terms->all();
+    $french = addSubject($schoolClass, coefficient: 1);
+    [$kouame, $mariam] = $students->all();
+
+    giveMarks($french, $term1, 10, [$kouame->id => 4, $mariam->id => 6]);
+    giveMarks($french, $term2, 10, [$kouame->id => 5, $mariam->id => 5]);
+    giveMarks($french, $term3, 10, [$kouame->id => 5, $mariam->id => 4]);
+
+    $annual = new AnnualResults($schoolClass);
+
+    // Kouamé: (4 + 5 + 5) / 3 = 4.67 ; Mariam: (6 + 5 + 4) / 3 = 5
+    expect($annual->students[$kouame->id])
+        ->average->toBe(4.67)
+        ->is_promoted->toBeFalse()
+        ->and($annual->students[$mariam->id])
+        ->average->toBe(5.0)
+        ->is_promoted->toBeTrue();
+});
+
+test('no promotion decision is computed for CM2 or the secondary', function (GradeLevel $level) {
+    [$schoolClass, $students, $term1] = classWithStudents($level, 1);
+    $french = addSubject($schoolClass, coefficient: 1);
+    giveMarks($french, $term1, 10, [$students->first()->id => 9]);
+
+    expect((new AnnualResults($schoolClass))->students[$students->first()->id]['is_promoted'])->toBeNull();
+})->with([GradeLevel::Cm2, GradeLevel::Sixieme]);
+
 test('staff print the report cards of a whole class as a PDF', function () {
     $this->actingAs(User::factory()->create());
 

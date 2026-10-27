@@ -2,19 +2,21 @@
 
 namespace App\Services\Grades;
 
+use App\Enums\Core\GradeLevel;
 use App\Models\Core\SchoolClass;
 use App\Models\Grades\Term;
 
 /**
  * Annual averages and ranks of a class: sum(term average × weight) / sum(weights) over the
  * terms where the student has an average, with the weights of config/grades.php.
+ * From CP1 to CM1, is_promoted tells whether the annual average reaches the passing mark.
  */
 class AnnualResults
 {
     /**
      * Keyed by student id.
      *
-     * @var array<int, array{terms: array<int, ?float>, average: ?float, rank: ?int, is_tied: bool}>
+     * @var array<int, array{terms: array<int, ?float>, average: ?float, rank: ?int, is_tied: bool, is_promoted: ?bool}>
      */
     public readonly array $students;
 
@@ -25,7 +27,10 @@ class AnnualResults
 
     public function __construct(public readonly SchoolClass $schoolClass)
     {
-        $weights = config('grades.annual_term_weights');
+        $weights = config('grades.annual_term_weights.'.($schoolClass->level->isPrimary() ? 'primary' : 'secondary'));
+        $passingAverage = $schoolClass->level->isPrimary() && $schoolClass->level !== GradeLevel::Cm2
+            ? config('grades.primary_passing_average')
+            : null;
 
         $termResults = $schoolClass->schoolYear->terms
             ->mapWithKeys(fn (Term $term): array => [$term->number => new TermResults($schoolClass, $term)]);
@@ -45,11 +50,14 @@ class AnnualResults
                 }
             }
 
+            $average = $weightTotal > 0 ? round($weightedSum / $weightTotal, 2) : null;
+
             $students[$studentId] = [
                 'terms' => $termAverages,
-                'average' => $weightTotal > 0 ? round($weightedSum / $weightTotal, 2) : null,
+                'average' => $average,
                 'rank' => null,
                 'is_tied' => false,
+                'is_promoted' => $passingAverage === null || $average === null ? null : $average >= $passingAverage,
             ];
         }
 
