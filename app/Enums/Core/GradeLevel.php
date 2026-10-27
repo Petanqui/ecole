@@ -81,7 +81,8 @@ enum GradeLevel: string implements HasLabel
 
     /**
      * The default programme of a class at this level, as subject code => coefficient.
-     * For upper secondary the series is the first letter of the section ("C1" => "C").
+     * For upper secondary the series is the longest series name the section starts with
+     * ("C1" => "C", "A2" => "A2"); an unknown series gives an empty programme.
      *
      * @return array<string, int>
      */
@@ -93,11 +94,18 @@ enum GradeLevel: string implements HasLabel
             return $programmes['primary'];
         }
 
-        if ($this->hasSeries()) {
-            return $programmes[$this->value][strtoupper(substr(trim($section), 0, 1))] ?? [];
+        if (! $this->hasSeries()) {
+            return $programmes[$this->value] ?? [];
         }
 
-        return $programmes[$this->value] ?? [];
+        $section = strtoupper(trim($section));
+
+        $series = collect(array_keys($programmes[$this->value] ?? []))
+            ->filter(fn (string $series): bool => str_starts_with($section, $series))
+            ->sortByDesc(fn (string $series): int => strlen($series))
+            ->first();
+
+        return $series === null ? [] : $programmes[$this->value][$series];
     }
 
     public function isPrimary(): bool

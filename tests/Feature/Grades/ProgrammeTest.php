@@ -54,6 +54,34 @@ test('upper secondary classes receive the programme of their series', function (
         ->and(programmeOf($terminaleC)['SVT'])->toBe(2);
 });
 
+test('default programmes match the totals of circulaire 02505 of 2022, optional subjects excluded', function (GradeLevel $level, string $section, int $expectedTotal) {
+    $schoolClass = SchoolClass::factory()->create(['level' => $level, 'section' => $section]);
+
+    expect(array_sum(programmeOf($schoolClass)))->toBe($expectedTotal);
+})->with([
+    '6e' => [GradeLevel::Sixieme, '1', 17],
+    '5e' => [GradeLevel::Cinquieme, '1', 17],
+    '4e' => [GradeLevel::Quatrieme, '1', 19],
+    '3e' => [GradeLevel::Troisieme, '1', 19],
+    '2nde A' => [GradeLevel::Seconde, 'A1', 22],
+    '2nde C' => [GradeLevel::Seconde, 'C2', 22],
+    '1ère A1' => [GradeLevel::Premiere, 'A1', 24],
+    '1ère A2' => [GradeLevel::Premiere, 'A2', 23],
+    '1ère C (+1 LV2 facultative)' => [GradeLevel::Premiere, 'C', 23],
+    '1ère D (+1 LV2 facultative)' => [GradeLevel::Premiere, 'D1', 23],
+    'Tle A1' => [GradeLevel::Terminale, 'A1', 27],
+    'Tle A2' => [GradeLevel::Terminale, 'A2', 25],
+    'Tle C (+1 LV2 facultative)' => [GradeLevel::Terminale, 'C', 22],
+    'Tle D (+1 LV2 facultative)' => [GradeLevel::Terminale, 'D', 22],
+]);
+
+test('first cycle French is split into three subjects', function () {
+    $quatrieme = SchoolClass::factory()->create(['level' => GradeLevel::Quatrieme, 'section' => '2']);
+
+    expect(programmeOf($quatrieme))->toMatchArray(['FR-OL' => 1, 'FR-OG' => 1, 'FR-EE' => 2])
+        ->not->toHaveKey('FR');
+});
+
 test('a class whose series is unknown starts with an empty programme', function () {
     $schoolClass = SchoolClass::factory()->create(['level' => GradeLevel::Seconde, 'section' => '1']);
 
@@ -74,7 +102,7 @@ test('completing with the default programme keeps edited coefficients and teache
 
     $maths = $schoolClass->classSubjects()->whereRelation('subject', 'code', 'MATH')->sole();
     $maths->update(['coefficient' => 5, 'teacher_id' => $teacher->id]);
-    $schoolClass->classSubjects()->whereRelation('subject', 'code', 'FR')->delete();
+    $schoolClass->classSubjects()->whereRelation('subject', 'code', 'FR-EE')->delete();
 
     Livewire::test(ClassSubjectsRelationManager::class, ['ownerRecord' => $schoolClass, 'pageClass' => EditSchoolClass::class])
         ->callAction(TestAction::make('applyDefaultProgramme')->table())
@@ -83,7 +111,7 @@ test('completing with the default programme keeps edited coefficients and teache
     expect($maths->fresh())
         ->coefficient->toBe(5)
         ->teacher_id->toBe($teacher->id)
-        ->and(programmeOf($schoolClass)['FR'])->toBe(4);
+        ->and(programmeOf($schoolClass)['FR-EE'])->toBe(1);
 });
 
 test('a subject cannot be added twice to the same class', function () {

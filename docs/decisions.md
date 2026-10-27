@@ -29,8 +29,13 @@
 ## Notes
 - Année découpée en 3 trimestres, créés automatiquement avec l'année scolaire
 - Chaque classe a son programme (matière, coefficient, enseignant), pré-rempli depuis config/grades.php
-  à la création de la classe ; au lycée la série est la 1re lettre de la section (2nde C1 → C)
-- Coefficients types inspirés de la pratique ivoirienne : À VÉRIFIER par l'école et ajuster dans config/grades.php
+  à la création de la classe ; au lycée la série est le début de la section (2nde C1 → C, Tle A2 → A2)
+- Coefficients du secondaire : circulaire n° 02505/MENA/DPFC du 21/07/2022 (en vigueur depuis 2022-2023)
+  - 1er cycle : Français = 3 disciplines (expression orale + lecture, orthographe + grammaire, expression écrite)
+  - 1ère/Tle A : séries A1 et A2 (seules les maths changent) → la section doit commencer par A1 ou A2
+  - LV2 facultative en 1ère/Tle C et D : pas dans le programme par défaut (règle de calcul à définir)
+  - Instruction religieuse et travaux manuels : jamais comptés dans les moyennes
+- Primaire : coefficients à 1 (pas de coefficients officiels fournis) ; la dictée est une matière (circulaire 02504)
 - Barème libre par évaluation (sur 10, 20, 50…)
 - Secondaire : chaque note ramenée sur 20, moyenne de matière = moyenne simple des notes, sur 20
 - Primaire : moyenne de matière = total des points / total des barèmes, ramené sur 10
