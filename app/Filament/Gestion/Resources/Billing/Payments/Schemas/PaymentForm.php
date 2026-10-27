@@ -4,6 +4,7 @@ namespace App\Filament\Gestion\Resources\Billing\Payments\Schemas;
 
 use App\Enums\Billing\PaymentMethod;
 use App\Models\Core\Enrollment;
+use App\Models\Core\Student;
 use App\Services\Billing\StudentAccount;
 use Closure;
 use Filament\Forms\Components\DatePicker;
@@ -26,6 +27,7 @@ class PaymentForm
                 Select::make('enrollment_id')
                     ->label('Élève')
                     ->searchable()
+                    ->options(fn (): array => static::enrollmentOptions(''))
                     ->getSearchResultsUsing(fn (string $search): array => static::enrollmentOptions($search))
                     ->getOptionLabelUsing(fn (mixed $value): ?string => static::enrollmentLabel(Enrollment::find($value)))
                     ->required()
@@ -80,19 +82,27 @@ class PaymentForm
     }
 
     /**
-     * Current-year enrollments whose student name or code matches the search.
+     * Current-year enrollments whose student matches every word of the search (last name, first name or code),
+     * so "Koné Awa" and "awa kon" both find Awa Koné; every enrollment when the search is empty.
      *
      * @return array<int, string>
      */
     protected static function enrollmentOptions(string $search): array
     {
+        $words = preg_split('/\s+/', trim($search), flags: PREG_SPLIT_NO_EMPTY);
+
         return Enrollment::query()
             ->whereRelation('schoolYear', 'is_current', true)
-            ->whereHas('student', fn (Builder $query) => $query
-                ->whereLike('last_name', "%{$search}%")
-                ->orWhereLike('first_name', "%{$search}%")
-                ->orWhereLike('code', "%{$search}%"))
+            ->whereHas('student', function (Builder $query) use ($words): void {
+                foreach ($words as $word) {
+                    $query->where(fn (Builder $query) => $query
+                        ->whereLike('last_name', "%{$word}%")
+                        ->orWhereLike('first_name', "%{$word}%")
+                        ->orWhereLike('code', "%{$word}%"));
+                }
+            })
             ->with(['student', 'schoolClass'])
+            ->orderBy(Student::select('last_name')->whereColumn('students.id', 'enrollments.student_id'))
             ->limit(50)
             ->get()
             ->mapWithKeys(fn (Enrollment $enrollment): array => [$enrollment->getKey() => static::enrollmentLabel($enrollment)])

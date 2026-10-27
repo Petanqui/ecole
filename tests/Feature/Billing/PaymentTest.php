@@ -80,6 +80,23 @@ test('staff record a payment and are named on it', function () {
         ->received_by->toBe($cashier->id);
 });
 
+test('the student is found by full name in any order, and listed before any search', function () {
+    $this->actingAs(User::factory()->create());
+    $student = $this->enrollment->student;
+    $student->update(['last_name' => 'Koné', 'first_name' => 'Awa']);
+    $other = Enrollment::factory()->for($this->enrollment->schoolClass)->create();
+
+    $select = Livewire::test(ManagePayments::class)
+        ->mountAction(CreateAction::class)
+        ->instance()
+        ->getSchemaComponent('mountedActionSchema0.enrollment_id');
+
+    expect(array_keys($select->getSearchResults('awa kon')))->toBe([$this->enrollment->id])
+        ->and(array_keys($select->getSearchResults('Koné Awa')))->toBe([$this->enrollment->id])
+        ->and($select->getSearchResults('awa yao'))->toBe([])
+        ->and($select->getOptions())->toHaveKeys([$this->enrollment->id, $other->id]);
+});
+
 test('a mobile money payment needs its transaction id', function () {
     $this->actingAs(User::factory()->create());
 
