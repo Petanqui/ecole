@@ -50,9 +50,12 @@ return [
 
     /*
     | Primary classes from CP1 to CM1 move up when the annual average reaches this mark (out of 10).
-    | CM2 is an exam class: admission to 6e depends on its own exam average.
+    | CM2 is an exam class: admission to 6e needs a MAP (mean of the regional compositions and
+    | mock exams, out of 20) of at least cm2_admission_average.
     */
     'primary_passing_average' => 5,
+
+    'cm2_admission_average' => 10,
 
     /*
     | Thresholds are on a scale of 20 and are scaled down for primary school (out of 10).

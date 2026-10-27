@@ -47,8 +47,9 @@
   - secondaire : (T1 + 2×T2 + 2×T3) / 5
   - primaire (guide MENA) : (T1 + T2 + T3) / 3 ; de CP1 à CM1, passage en classe supérieure si ≥ 5/10
     (affiché comme décision sur le bulletin du 3e trimestre)
-  - CM2 : moyenne d'admission en 6e (MAP) = (Compo régionale 1 + 2 + Examen blanc 1 + 2) / 4, ≥ 10/20 :
-    pas encore gérée (saisie de ces épreuves à définir)
+  - CM2 : moyenne d'admission en 6e (MAP) = (Compo régionale 1 + 2 + Examen blanc 1 + 2) / 4, admis si ≥ 10/20 ;
+    une note globale sur 20 par épreuve, saisie par le personnel (Notes → Admission en 6e), hors moyennes
+    trimestrielles ; MAP et décision sur le bulletin du 3e trimestre, une fois les 4 notes saisies
 - Distinctions (sur 20, ramenées sur 10 au primaire) : Félicitations ≥ 16, Encouragements ≥ 14,
   Tableau d'honneur ≥ 12, Avertissement < 8,5 ; sur le bulletin du 3e trimestre, elles portent sur la moyenne annuelle
 - Appréciations par matière : Excellent ≥ 18, Très bien ≥ 16, Bien ≥ 14, Assez bien ≥ 12, Passable ≥ 10,

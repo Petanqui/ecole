@@ -1,4 +1,5 @@
 @php
+    use App\Enums\Core\GradeLevel;
     use App\Services\Grades\Appreciation;
     use App\Services\Grades\TermResults;
 
@@ -140,7 +141,12 @@
                             @endforeach
                             <div>Moyenne annuelle : <span class="big">{{ $average($annualRow['average']) }} / {{ $scale }}</span></div>
                             <div>Rang annuel : <strong>{{ $rank($annualRow['rank'], $annualRow['is_tied']) }}</strong></div>
-                            @if ($annualRow['is_promoted'] !== null)
+                            @if ($schoolClass->level === GradeLevel::Cm2)
+                                <div>Moyenne d'admission en 6e (MAP) : <strong>{{ $average($annualRow['admission_average']) }} / 20</strong></div>
+                                @if ($annualRow['is_promoted'] !== null)
+                                    <div>Décision : <strong>{{ $annualRow['is_promoted'] ? 'Admis(e) en 6e' : 'Non admis(e) en 6e' }}</strong></div>
+                                @endif
+                            @elseif ($annualRow['is_promoted'] !== null)
                                 <div>Décision : <strong>{{ $annualRow['is_promoted'] ? 'Admis(e) en classe supérieure' : 'Redouble' }}</strong></div>
                             @endif
                         </div>
