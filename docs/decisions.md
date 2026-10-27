@@ -75,6 +75,10 @@
 - Un paiement ne se modifie ni ne se supprime : un administrateur l'annule avec un motif, il reste visible
   (« annulé ») et ne compte plus ; on saisit alors le bon paiement
 - Compte de l'élève : onglet « Compte » de l'inscription (paiements, échéancier, solde, retard)
+- Impayés (Facturation → Impayés) : élèves de l'année en cours en retard à une date donnée (par défaut aujourd'hui),
+  plus gros retard d'abord, avec le téléphone des parents ; export CSV (séparateur « ; », lisible par Excel)
+- Retard = montant des tranches échues à la date − total payé
+- Portail : pour chaque enfant, reste à payer (et retard), échéancier, paiements et téléchargement des reçus
 
 ## Hébergement
 - VPS en Europe, avec déclaration et demande d'autorisation de transfert à l'ARTCI

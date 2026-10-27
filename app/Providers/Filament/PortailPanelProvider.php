@@ -3,6 +3,7 @@
 namespace App\Providers\Filament;
 
 use App\Filament\Auth\Login;
+use App\Http\Controllers\Billing\ReceiptController;
 use App\Http\Controllers\Grades\ReportCardController;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
@@ -58,6 +59,8 @@ class PortailPanelProvider extends PanelProvider
             ->authenticatedRoutes(function (): void {
                 Route::get('bulletins/{student}/{term}', [ReportCardController::class, 'forStudent'])
                     ->name('report-cards.student');
+                Route::get('recus/{payment}', ReceiptController::class)
+                    ->name('receipts.show');
             });
     }
 }
