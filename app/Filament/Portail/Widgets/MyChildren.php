@@ -5,9 +5,11 @@ namespace App\Filament\Portail\Widgets;
 use App\Models\Core\SchoolYear;
 use App\Models\Core\Student;
 use App\Models\Grades\Term;
+use App\Models\Timetable\TimetableSlot;
 use App\Services\Attendance\AttendanceSummary;
 use App\Services\Billing\StudentAccount;
 use Filament\Actions\Action;
+use Filament\Support\Enums\Width;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
@@ -16,7 +18,8 @@ use Illuminate\Database\Eloquent\Builder;
 
 /**
  * The children of the signed-in parent's family, with their class for the current school year
- * their account (what is left to pay, installments, receipts), their absences and their report cards for the terms that are closed.
+ * their account (what is left to pay, installments, receipts), their timetable, their absences and their report cards
+ * for the terms that are closed.
  */
 class MyChildren extends TableWidget
 {
@@ -85,6 +88,18 @@ class MyChildren extends TableWidget
                     ->placeholder('—'),
             ])
             ->recordActions([
+                Action::make('timetable')
+                    ->label('Emploi du temps')
+                    ->icon(Heroicon::OutlinedCalendarDays)
+                    ->visible(fn (Student $record): bool => $record->currentEnrollment !== null)
+                    ->modalHeading(fn (Student $record): string => "Emploi du temps — {$record->currentEnrollment->schoolClass->name}")
+                    ->modalWidth(Width::SixExtraLarge)
+                    ->modalContent(fn (Student $record) => view('filament.portail.timetable.week', [
+                        'schoolClass' => $record->currentEnrollment->schoolClass,
+                        'slots' => TimetableSlot::query()->ofClass($record->currentEnrollment->school_class_id)->get(),
+                    ]))
+                    ->modalSubmitAction(false)
+                    ->modalCancelActionLabel('Fermer'),
                 Action::make('attendance')
                     ->label('Absences')
                     ->icon(Heroicon::OutlinedCalendarDays)

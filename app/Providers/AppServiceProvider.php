@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Models\Billing\Payment;
+use App\Models\Core\SchoolClass;
 use App\Models\Core\Student;
 use App\Models\Grades\Term;
 use App\Models\User;
@@ -26,6 +27,23 @@ class AppServiceProvider extends ServiceProvider
     {
         $this->defineReportCardAbilities();
         $this->defineBillingAbilities();
+        $this->defineTimetableAbilities();
+    }
+
+    /**
+     * Staff and teachers see every class timetable; a parent those of the classes their children are in.
+     */
+    protected function defineTimetableAbilities(): void
+    {
+        Gate::define('view-class-timetable', function (User $user, SchoolClass $schoolClass): bool {
+            if ($user->isStaffMember() || $user->isTeacher()) {
+                return true;
+            }
+
+            return $schoolClass->enrollments()
+                ->whereHas('student.family.guardians', fn ($query) => $query->where('user_id', $user->getKey()))
+                ->exists();
+        });
     }
 
     /**

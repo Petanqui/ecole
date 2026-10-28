@@ -5,6 +5,7 @@ namespace App\Providers\Filament;
 use App\Filament\Auth\Login;
 use App\Http\Controllers\Billing\ReceiptController;
 use App\Http\Controllers\Grades\ReportCardController;
+use App\Http\Controllers\Timetable\ClassTimetableController;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -62,6 +63,8 @@ class GestionPanelProvider extends PanelProvider
                     ->name('report-cards.class');
                 Route::get('recus/{payment}', ReceiptController::class)
                     ->name('receipts.show');
+                Route::get('emplois-du-temps/{schoolClass}', ClassTimetableController::class)
+                    ->name('timetables.class');
             });
     }
 }

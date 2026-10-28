@@ -4,8 +4,11 @@ namespace App\Models\Timetable;
 
 use App\Enums\Timetable\Weekday;
 use App\Models\Grades\ClassSubject;
+use App\Models\User;
 use Database\Factories\Timetable\TimetableSlotFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Attributes\Scope;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -101,6 +104,32 @@ class TimetableSlot extends Model
             })
             ->values()
             ->all();
+    }
+
+    /**
+     * The lessons of a class, with what a week view shows.
+     *
+     * @param  Builder<TimetableSlot>  $query
+     */
+    #[Scope]
+    protected function ofClass(Builder $query, ?int $schoolClassId): void
+    {
+        $query->whereRelation('classSubject', 'school_class_id', $schoolClassId)
+            ->with(['classSubject.subject', 'classSubject.teacher', 'room']);
+    }
+
+    /**
+     * The lessons a teacher gives in the classes of the current school year.
+     *
+     * @param  Builder<TimetableSlot>  $query
+     */
+    #[Scope]
+    protected function taughtBy(Builder $query, User $teacher): void
+    {
+        $query->whereHas('classSubject', fn (Builder $query) => $query
+            ->where('teacher_id', $teacher->getKey())
+            ->whereRelation('schoolClass.schoolYear', 'is_current', true))
+            ->with(['classSubject.subject', 'classSubject.schoolClass', 'room']);
     }
 
     /**

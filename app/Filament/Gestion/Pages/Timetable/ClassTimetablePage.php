@@ -10,6 +10,7 @@ use App\Models\Timetable\Room;
 use App\Models\Timetable\TimetableSlot;
 use BackedEnum;
 use Closure;
+use Filament\Actions\Action;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
@@ -77,12 +78,22 @@ class ClassTimetablePage extends Page implements HasTable
             ]);
     }
 
+    protected function getHeaderActions(): array
+    {
+        return [
+            Action::make('print')
+                ->label('Imprimer (PDF)')
+                ->icon(Heroicon::OutlinedPrinter)
+                ->color('gray')
+                ->visible(fn (): bool => $this->selectedClassId() !== null)
+                ->url(fn (): string => route('filament.gestion.timetables.class', $this->selectedClassId()), shouldOpenInNewTab: true),
+        ];
+    }
+
     public function table(Table $table): Table
     {
         return $table
-            ->query(fn (): Builder => TimetableSlot::query()
-                ->whereRelation('classSubject', 'school_class_id', $this->selectedClassId())
-                ->with(['classSubject.subject', 'classSubject.teacher', 'room']))
+            ->query(fn (): Builder => TimetableSlot::query()->ofClass($this->selectedClassId()))
             ->defaultSort(fn (Builder $query) => $query->orderBy('weekday')->orderBy('starts_at'))
             ->paginated(false)
             ->heading('Cours de la semaine')
@@ -121,10 +132,7 @@ class ClassTimetablePage extends Page implements HasTable
      */
     public function getWeekSlots(): Collection
     {
-        return TimetableSlot::query()
-            ->whereRelation('classSubject', 'school_class_id', $this->selectedClassId())
-            ->with(['classSubject.subject', 'classSubject.teacher', 'room'])
-            ->get();
+        return TimetableSlot::query()->ofClass($this->selectedClassId())->get();
     }
 
     /**

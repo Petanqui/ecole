@@ -124,6 +124,9 @@
   salle facultative (Emploi du temps → Salles)
 - Refusé si, sur un même créneau de la même année scolaire, la classe, l'enseignant ou la salle a déjà un cours
 - Saisie par le personnel (Emploi du temps → Par classe) ; une salle utilisée ne peut pas être supprimée
+- Un enseignant voit sa semaine (Mon emploi du temps) ; le personnel celle de n'importe quel enseignant (Par enseignant)
+- PDF de l'emploi du temps d'une classe (A4 paysage) : personnel, enseignants, et parents d'un élève de la classe
+- Portail : emploi du temps de la classe de chaque enfant, avec le PDF
 
 ## Hébergement
 - VPS en Europe, avec déclaration et demande d'autorisation de transfert à l'ARTCI

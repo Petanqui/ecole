@@ -3,6 +3,10 @@
 use App\Enums\Core\GradeLevel;
 use App\Enums\Timetable\Weekday;
 use App\Filament\Gestion\Pages\Timetable\ClassTimetablePage;
+use App\Filament\Gestion\Pages\Timetable\TeacherTimetablePage;
+use App\Filament\Portail\Widgets\MyChildren;
+use App\Models\Core\Enrollment;
+use App\Models\Core\Guardian;
 use App\Models\Core\SchoolClass;
 use App\Models\Core\SchoolYear;
 use App\Models\Grades\ClassSubject;
@@ -11,6 +15,7 @@ use App\Models\Timetable\Room;
 use App\Models\Timetable\TimetableSlot;
 use App\Models\User;
 use Filament\Actions\Testing\TestAction;
+use Filament\Facades\Filament;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
 
@@ -77,6 +82,54 @@ test('changing a lesson does not clash with itself', function () {
         ->assertHasNoActionErrors();
 
     expect($lesson->fresh()->time_slot)->toBe('09:00 – 11:00');
+});
+
+test('a teacher sees their own week across classes', function () {
+    TimetableSlot::factory()->for($this->cinquiemeMaths)->create(['weekday' => Weekday::Tuesday, 'starts_at' => '10:00', 'hours' => 1]);
+    TimetableSlot::factory()->for($this->sixiemeEnglish)->create(['weekday' => Weekday::Tuesday, 'starts_at' => '08:00']);
+    $this->actingAs($this->teacher);
+
+    Livewire::test(TeacherTimetablePage::class)
+        ->assertSee(['6e1', '5e1', '08:00 – 10:00', '10:00 – 11:00', '3 heure(s) de cours par semaine'])
+        ->assertDontSee('Anglais');
+});
+
+test('staff look at the week of any teacher', function () {
+    $this->actingAs(User::factory()->create());
+    $otherTeacher = User::factory()->teacher()->create(['name' => 'Awa Diallo']);
+    $this->sixiemeEnglish->update(['teacher_id' => $otherTeacher->id]);
+    TimetableSlot::factory()->for($this->sixiemeEnglish)->create(['weekday' => Weekday::Friday, 'starts_at' => '14:00']);
+
+    Livewire::test(TeacherTimetablePage::class)
+        ->set('selection.teacher_id', $otherTeacher->id)
+        ->assertSee(['Anglais', '14:00 – 15:00'])
+        ->assertDontSee('Mathématiques');
+});
+
+test('the class timetable is printed as PDF by staff and by the parents of the class', function () {
+    $this->actingAs(User::factory()->create())
+        ->get(route('filament.gestion.timetables.class', $this->sixieme))
+        ->assertOk()
+        ->assertHeader('content-type', 'application/pdf');
+
+    $parent = User::factory()->guardian()->create();
+    $student = Enrollment::factory()->for($this->sixieme)->create()->student;
+    Guardian::factory()->for($student->family)->for($parent)->create();
+
+    $this->actingAs($parent)->get(route('filament.portail.timetables.class', $this->sixieme))->assertOk();
+    $this->actingAs($parent)->get(route('filament.portail.timetables.class', $this->cinquieme))->assertForbidden();
+});
+
+test('a parent sees the timetable of their child in the portal', function () {
+    $parent = User::factory()->guardian()->create();
+    $student = Enrollment::factory()->for($this->sixieme)->create()->student;
+    Guardian::factory()->for($student->family)->for($parent)->create();
+    Filament::setCurrentPanel('portail');
+    $this->actingAs($parent);
+
+    Livewire::test(MyChildren::class)
+        ->mountAction(TestAction::make('timetable')->table($student))
+        ->assertMountedActionModalSee(['Lundi', '08:00 – 10:00', 'Mathématiques', 'Jean Kouassi', 'Labo', 'Télécharger en PDF']);
 });
 
 test('teachers cannot edit the timetables', function () {
