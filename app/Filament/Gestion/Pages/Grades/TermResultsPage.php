@@ -59,13 +59,22 @@ class TermResultsPage extends Page implements HasTable
         return $user instanceof User && ($user->isStaffMember() || $user->isTeacher());
     }
 
+    /**
+     * Opens on the class and term given as ?classe= and ?trimestre= (ids) when allowed,
+     * otherwise on the first class and the current term.
+     */
     public function mount(): void
     {
-        $termId = SchoolYear::current()->first()?->terms()->where('is_closed', false)->value('id')
-            ?? SchoolYear::current()->first()?->terms()->orderByDesc('number')->value('id');
+        $terms = SchoolYear::current()->first()?->terms;
+        $requestedTermId = request()->integer('trimestre');
+        $termId = $terms?->contains('id', $requestedTermId)
+            ? $requestedTermId
+            : ($terms?->firstWhere('is_closed', false) ?? $terms?->last())?->id;
+
+        $requestedClassId = request()->integer('classe');
 
         $this->form->fill([
-            'school_class_id' => array_key_first($this->classOptions()),
+            'school_class_id' => array_key_exists($requestedClassId, $this->classOptions()) ? $requestedClassId : array_key_first($this->classOptions()),
             'term_id' => $termId,
         ]);
     }

@@ -138,6 +138,9 @@
   élèves par niveau ; encaissements par mois ; assiduité par classe
 - Taux d'absence d'une classe = heures d'absence / (heures d'appel × nombre d'élèves)
 - Enseignants : l'accueil montre leurs cours du jour (le personnel voit tous les cours du jour)
+- Bilan des résultats (Rapports, personnel) : pour un trimestre, chaque classe avec effectif, élèves classés,
+  moyenne de la classe, plus forte, plus faible, part des élèves ayant la moyenne (5/10 au primaire, 10/20 au
+  secondaire) et premier(e) ; export CSV ; lien vers le détail de la classe (Notes → Résultats)
 
 ## Hébergement
 - VPS en Europe, avec déclaration et demande d'autorisation de transfert à l'ARTCI
