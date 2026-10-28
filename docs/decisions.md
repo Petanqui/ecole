@@ -132,6 +132,13 @@
   ouvert) ou rouvre celui déjà fait ; refusé si la classe a déjà un appel sur ce créneau ou si tout est clôturé
 - L'appel manuel (« Faire l'appel » en haut de page) reste possible pour un cours hors emploi du temps
 
+## Rapports
+- Tableau de bord de la gestion (personnel seulement) pour l'année en cours : élèves inscrits, encaissé ce mois
+  et sur l'année, paiements en retard, heures d'absence des 30 derniers jours (dont non justifiées) ;
+  élèves par niveau ; encaissements par mois ; assiduité par classe
+- Taux d'absence d'une classe = heures d'absence / (heures d'appel × nombre d'élèves)
+- Enseignants : l'accueil montre leurs cours du jour (le personnel voit tous les cours du jour)
+
 ## Hébergement
 - VPS en Europe, avec déclaration et demande d'autorisation de transfert à l'ARTCI
 - Fuseau horaire : Africa/Abidjan

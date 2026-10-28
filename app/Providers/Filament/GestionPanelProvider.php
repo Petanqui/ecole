@@ -3,6 +3,7 @@
 namespace App\Providers\Filament;
 
 use App\Filament\Auth\Login;
+use App\Filament\Gestion\Resources\Attendance\AttendanceSessions\Widgets\TodayLessons;
 use App\Http\Controllers\Billing\ReceiptController;
 use App\Http\Controllers\Grades\ReportCardController;
 use App\Http\Controllers\Timetable\ClassTimetableController;
@@ -43,6 +44,7 @@ class GestionPanelProvider extends PanelProvider
             ->discoverWidgets(in: app_path('Filament/Gestion/Widgets'), for: 'App\Filament\Gestion\Widgets')
             ->widgets([
                 AccountWidget::class,
+                TodayLessons::class,
             ])
             ->middleware([
                 EncryptCookies::class,
