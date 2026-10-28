@@ -118,6 +118,13 @@
   voient les mêmes) ; il écrit à l'administration ou à un enseignant d'une classe de ses enfants cette année,
   éventuellement au sujet d'un enfant
 
+## Emploi du temps
+- Une semaine type par classe, valable toute l'année (pas de semaines A/B) ; du lundi au samedi
+- Un cours = matière de la classe (donc son enseignant), jour, heure de début, durée en heures entières (1 à 4),
+  salle facultative (Emploi du temps → Salles)
+- Refusé si, sur un même créneau de la même année scolaire, la classe, l'enseignant ou la salle a déjà un cours
+- Saisie par le personnel (Emploi du temps → Par classe) ; une salle utilisée ne peut pas être supprimée
+
 ## Hébergement
 - VPS en Europe, avec déclaration et demande d'autorisation de transfert à l'ARTCI
 - Fuseau horaire : Africa/Abidjan

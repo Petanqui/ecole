@@ -3,12 +3,14 @@
 namespace App\Models\Grades;
 
 use App\Models\Core\SchoolClass;
+use App\Models\Timetable\TimetableSlot;
 use App\Models\User;
 use Database\Factories\Grades\ClassSubjectFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * A subject in the programme of a class, with its coefficient and teacher.
@@ -53,6 +55,16 @@ class ClassSubject extends Model
     public function teacher(): BelongsTo
     {
         return $this->belongsTo(User::class, 'teacher_id');
+    }
+
+    /**
+     * The weekly lessons of this subject in the class.
+     *
+     * @return HasMany<TimetableSlot, $this>
+     */
+    public function timetableSlots(): HasMany
+    {
+        return $this->hasMany(TimetableSlot::class);
     }
 
     /**
