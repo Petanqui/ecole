@@ -19,28 +19,29 @@ use Livewire\Livewire;
 
 uses(RefreshDatabase::class);
 
-test('each role can only open its own panel', function (string $state, string $allowedPanel, string $forbiddenPanel) {
+test('each role can only open its own panel, and is sent back to it from the other one', function (string $state, string $allowedPanel, string $forbiddenPanel, string $forbiddenPage) {
     $user = User::factory()->{$state}()->create();
 
     $this->actingAs($user)->get("/{$allowedPanel}")->assertOk();
-    $this->actingAs($user)->get("/{$forbiddenPanel}")->assertForbidden();
+    $this->actingAs($user)->get("/{$forbiddenPanel}")->assertRedirect("/{$allowedPanel}");
+    $this->actingAs($user)->get("/{$forbiddenPanel}/{$forbiddenPage}")->assertRedirect("/{$allowedPanel}");
 })->with([
-    'administrator' => ['admin', 'gestion', 'portail'],
-    'parent' => ['guardian', 'portail', 'gestion'],
+    'administrator' => ['admin', 'gestion', 'portail', 'messages'],
+    'parent' => ['guardian', 'portail', 'gestion', 'caisse'],
 ]);
 
 test('staff can open the gestion panel but not the portal', function () {
     $staff = User::factory()->create();
 
     $this->actingAs($staff)->get('/gestion')->assertOk();
-    $this->actingAs($staff)->get('/portail')->assertForbidden();
+    $this->actingAs($staff)->get('/portail')->assertRedirect('/gestion');
 });
 
 test('panel access is enforced outside the local environment', function () {
     $this->app['env'] = 'production';
     $parent = User::factory()->guardian()->create();
 
-    $this->actingAs($parent)->get('/gestion')->assertForbidden();
+    $this->actingAs($parent)->get('/gestion')->assertRedirect('/portail');
 });
 
 test('only administrators can manage staff accounts', function () {

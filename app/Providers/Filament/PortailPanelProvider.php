@@ -6,7 +6,7 @@ use App\Filament\Auth\Login;
 use App\Http\Controllers\Billing\ReceiptController;
 use App\Http\Controllers\Grades\ReportCardController;
 use App\Http\Controllers\Timetable\ClassTimetableController;
-use Filament\Http\Middleware\Authenticate;
+use App\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;

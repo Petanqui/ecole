@@ -35,6 +35,24 @@ test('a wrong password is rejected', function () {
     $this->assertGuest();
 });
 
+test('someone with the right password at the wrong door is told where to sign in', function () {
+    User::factory()->guardian()->create(['phone' => '+2250700000000']);
+
+    $rightPassword = Livewire::test(Login::class)
+        ->fillForm(['phone' => '0700000000', 'password' => 'password'])
+        ->call('authenticate');
+
+    expect($rightPassword->errors()->first('data.phone'))
+        ->toBe('Ce compte est un compte parent : connectez-vous sur le portail, à l\'adresse '.Filament::getPanel('portail')->getLoginUrl());
+    $this->assertGuest();
+
+    $wrongPassword = Livewire::test(Login::class)
+        ->fillForm(['phone' => '0700000000', 'password' => 'wrong-password'])
+        ->call('authenticate');
+
+    expect($wrongPassword->errors()->first('data.phone'))->toBe(__('filament-panels::auth/pages/login.messages.failed'));
+});
+
 test('a user can be created without an e-mail address', function () {
     $user = User::factory()->create(['email' => null, 'phone' => '07 11 22 33 44']);
 

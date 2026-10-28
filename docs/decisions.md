@@ -22,6 +22,8 @@
 ## Connexion
 - Identifiant : numéro de téléphone + mot de passe (e-mail facultatif)
 - Rôles : Administrateur et Personnel → /gestion ; Parent → /portail (enseignants et élèves : plus tard)
+- Les deux espaces partagent la même session : un utilisateur connecté qui ouvre l'autre espace est renvoyé
+  vers l'accueil du sien ; à la connexion, un bon mot de passe sur le mauvais espace indique où se connecter
 - Seuls les administrateurs gèrent les comptes du personnel (Administration → Comptes du personnel)
 - Comptes parents créés depuis la fiche famille ; mot de passe généré (8 caractères lisibles) à transmettre au parent
 - Supprimer un parent supprime son accès ; changer son nom/téléphone met à jour son compte
@@ -96,6 +98,8 @@
   (espèces à remettre / autres modes) ; les paiements annulés sont listés mais jamais comptés
 - État de caisse en PDF (A4) à signer (caissier, responsable financier) et export CSV des paiements de la période
 - Portail : pour chaque enfant, reste à payer (et retard), échéancier, paiements et téléchargement des reçus
+- Accueil du portail : encadré « Paiements en retard » (montant et plus ancienne échéance impayée, lien vers la
+  dernière relance de l'école) ou « Prochaines échéances » (tranche due dans les 14 jours) ; rien si tout est à jour
 
 ## Présences
 - Appel par heure de cours (primaire et secondaire) : classe + matière, date, heure de début, durée en heures,
