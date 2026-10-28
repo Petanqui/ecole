@@ -7,6 +7,7 @@ use App\Models\Attendance\Attendance;
 use App\Models\Billing\Discount;
 use App\Models\Billing\Fee;
 use App\Models\Billing\Payment;
+use App\Models\Billing\PaymentReminder;
 use App\Models\Grades\AdmissionExamScore;
 use Database\Factories\Core\EnrollmentFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -109,6 +110,16 @@ class Enrollment extends Model
     public function discounts(): BelongsToMany
     {
         return $this->belongsToMany(Discount::class);
+    }
+
+    /**
+     * The messages sent to the family about overdue payments.
+     *
+     * @return HasMany<PaymentReminder, $this>
+     */
+    public function paymentReminders(): HasMany
+    {
+        return $this->hasMany(PaymentReminder::class);
     }
 
     /**

@@ -4,15 +4,20 @@ namespace App\Filament\Gestion\Pages\Billing;
 
 use App\Filament\Gestion\Concerns\RestrictedToStaffMembers;
 use App\Filament\Gestion\Resources\Core\Enrollments\EnrollmentResource;
+use App\Models\Billing\PaymentReminder;
 use App\Models\Core\Enrollment;
 use App\Models\Core\Guardian;
 use App\Models\Core\SchoolClass;
+use App\Models\User;
 use App\Services\Billing\StudentAccount;
 use BackedEnum;
 use Filament\Actions\Action;
+use Filament\Actions\BulkAction;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\Toggle;
+use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Schema;
@@ -49,6 +54,11 @@ class ArrearsPage extends Page implements HasTable
     protected static ?string $title = 'Impayés';
 
     protected static ?string $slug = 'impayes';
+
+    /**
+     * Reminding several families at once skips those reminded more recently than this.
+     */
+    public const int DAYS_BETWEEN_REMINDERS = 7;
 
     /**
      * @var array{school_class_id?: int|string|null, as_of?: string|null, includes_up_to_date?: bool}
@@ -131,13 +141,101 @@ class ArrearsPage extends Page implements HasTable
                 TextColumn::make('next_due')
                     ->label('Prochaine échéance')
                     ->placeholder('Soldé'),
+                TextColumn::make('last_reminded_at')
+                    ->label('Dernière relance')
+                    ->date('d/m/Y')
+                    ->placeholder('—'),
             ])
             ->recordActions([
+                Action::make('remind')
+                    ->label('Relancer')
+                    ->icon(Heroicon::OutlinedEnvelope)
+                    ->visible(fn (array $record): bool => $record['overdue'] > 0)
+                    ->modalHeading(fn (array $record): string => "Relancer la famille de {$record['student']}")
+                    ->modalDescription('Le message est envoyé sur le portail à tous les parents de la famille, au nom de l\'administration.')
+                    ->modalSubmitActionLabel('Envoyer')
+                    ->fillForm(fn (array $record): array => ['body' => PaymentReminder::defaultMessage($this->account($record['id']), $this->asOf())])
+                    ->schema([
+                        Textarea::make('body')
+                            ->label('Message')
+                            ->rows(14)
+                            ->required()
+                            ->maxLength(5000),
+                    ])
+                    ->action(function (array $record, array $data): void {
+                        /** @var User $user */
+                        $user = auth()->user();
+                        PaymentReminder::send($this->account($record['id']), $user, $this->asOf(), $data['body']);
+                        $this->refreshRows();
+
+                        Notification::make()
+                            ->success()
+                            ->title('Relance envoyée')
+                            ->body($record['has_portal_access'] ? null : 'Aucun parent de cette famille n\'a encore accès au portail : pensez à l\'appeler.')
+                            ->send();
+                    }),
                 Action::make('account')
                     ->label('Compte')
                     ->icon(Heroicon::OutlinedBanknotes)
                     ->url(fn (array $record): string => EnrollmentResource::getUrl('edit', ['record' => $record['id']])),
+            ])
+            ->toolbarActions([
+                BulkAction::make('remind')
+                    ->label('Relancer')
+                    ->icon(Heroicon::OutlinedEnvelope)
+                    ->requiresConfirmation()
+                    ->modalHeading('Relancer les familles sélectionnées')
+                    ->modalDescription('Chaque famille reçoit sur le portail le message type, avec le détail de son retard. Les élèves à jour et ceux relancés ces '
+                        .static::DAYS_BETWEEN_REMINDERS.' derniers jours sont ignorés.')
+                    ->modalSubmitActionLabel('Envoyer')
+                    ->action(fn (Collection $records) => $this->remindAll($records))
+                    ->deselectRecordsAfterCompletion(),
             ]);
+    }
+
+    /**
+     * Send the standard reminder to each selected student in arrears who was not reminded lately.
+     *
+     * @param  Collection<int, array<string, mixed>>  $records
+     */
+    protected function remindAll(Collection $records): void
+    {
+        /** @var User $user */
+        $user = auth()->user();
+        $remindedSince = now()->subDays(static::DAYS_BETWEEN_REMINDERS);
+
+        $toRemind = $records->filter(fn (array $row): bool => $row['overdue'] > 0
+            && ($row['last_reminded_at'] === null || Carbon::parse($row['last_reminded_at'])->lt($remindedSince)));
+
+        $enrollments = Enrollment::query()->whereKey($toRemind->pluck('id'))->with('student')->get();
+
+        foreach (StudentAccount::forEnrollments($enrollments) as $account) {
+            PaymentReminder::send($account, $user, $this->asOf());
+        }
+
+        $this->refreshRows();
+
+        $withoutPortalAccess = $toRemind->reject(fn (array $row): bool => $row['has_portal_access'])->count();
+        $skipped = $records->count() - $toRemind->count();
+
+        Notification::make()
+            ->success()
+            ->title("{$toRemind->count()} relance(s) envoyée(s)")
+            ->body(collect([
+                $skipped > 0 ? "{$skipped} élève(s) ignoré(s) (à jour ou relancé(s) récemment)." : null,
+                $withoutPortalAccess > 0 ? "{$withoutPortalAccess} famille(s) sans accès au portail : pensez à les appeler." : null,
+            ])->filter()->implode(' ') ?: null)
+            ->send();
+    }
+
+    /**
+     * The account of a current-year enrollment shown on the page.
+     */
+    protected function account(int $enrollmentId): StudentAccount
+    {
+        abort_unless($this->rows()->has($enrollmentId), 404);
+
+        return new StudentAccount(Enrollment::with(['student', 'schoolClass'])->findOrFail($enrollmentId));
     }
 
     protected function getHeaderActions(): array
@@ -177,6 +275,7 @@ class ArrearsPage extends Page implements HasTable
             ->whereRelation('schoolYear', 'is_current', true)
             ->when($this->criteria['school_class_id'] ?? null, fn ($query, $classId) => $query->where('school_class_id', $classId))
             ->with(['student.family.guardians'])
+            ->withMax('paymentReminders as last_reminded_at', 'created_at')
             ->get();
 
         $asOf = $this->asOf();
@@ -194,6 +293,7 @@ class ArrearsPage extends Page implements HasTable
                     'guardians' => $student->family->guardians
                         ->map(fn (Guardian $guardian): string => "{$guardian->first_name} {$guardian->last_name} : {$guardian->phone}")
                         ->all(),
+                    'has_portal_access' => $student->family->guardians->whereNotNull('user_id')->isNotEmpty(),
                     'total' => $account->total(),
                     'paid' => $account->paid(),
                     'overdue' => $account->overdue($asOf),
@@ -201,6 +301,7 @@ class ArrearsPage extends Page implements HasTable
                     'next_due' => $nextDue === null
                         ? null
                         : $nextDue['due_on']->format('d/m/Y').' : '.StudentAccount::formatAmount($nextDue['remaining']),
+                    'last_reminded_at' => $account->enrollment->last_reminded_at,
                 ];
             })
             ->when(! ($this->criteria['includes_up_to_date'] ?? false), fn (Collection $rows) => $rows->filter(fn (array $row): bool => $row['overdue'] > 0))

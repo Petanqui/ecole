@@ -85,6 +85,12 @@
 - Impayés (Facturation → Impayés) : élèves de l'année en cours en retard à une date donnée (par défaut aujourd'hui),
   plus gros retard d'abord, avec le téléphone des parents ; export CSV (séparateur « ; », lisible par Excel)
 - Retard = montant des tranches échues à la date − total payé
+- Relances (depuis Impayés, personnel) : message sur le portail à la famille, au nom de l'administration, au sujet
+  de l'élève ; message type prérempli (tranches en retard, total du retard, reste à payer sur l'année), modifiable
+  pour une relance individuelle ; les relances d'un même élève se suivent dans la même conversation
+- Relance groupée (élèves cochés) : message type, en ignorant les élèves à jour et ceux relancés depuis moins de 7 jours
+- Impayés affiche la date de la dernière relance ; l'école est avertie quand la famille n'a pas encore d'accès
+  au portail (à appeler)
 - Portail : pour chaque enfant, reste à payer (et retard), échéancier, paiements et téléchargement des reçus
 
 ## Présences
