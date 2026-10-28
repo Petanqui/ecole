@@ -65,7 +65,14 @@
   les élèves inscrits à ce frais (cases à cocher sur l'inscription)
 - Ce qu'un élève doit est calculé à partir des tarifs actuels (rien n'est figé) : modifier un tarif modifie le dû
   de tous les élèves concernés ; un élève inscrit en cours d'année doit toutes les tranches
-- Pas de réductions pour l'instant (fratrie, bourses, enfants du personnel : plus tard)
+- Réductions (Facturation → Réductions) : types définis par année scolaire (« Fratrie », « Bourse »…),
+  en pourcentage ou en montant fixe, sur les frais cochés ; attribuées élève par élève sur l'inscription
+- Une réduction ne porte que sur les frais que l'élève doit (pas sur un frais optionnel non souscrit) ;
+  un montant fixe se partage entre ses frais au prorata de leur montant
+- Chaque tranche est réduite au prorata (l'échéancier garde son rythme), en francs entiers, le reste d'arrondi
+  sur la dernière tranche ; les réductions s'additionnent sans dépasser le frais
+- Comme les tarifs, les réductions sont calculées en direct (rien n'est figé) ; l'échéancier montre la réduction
+  par tranche et le reçu rappelle le total des réductions
 - Moyens de paiement : espèces, Mobile Money (Orange, MTN, Moov, Wave), virement, chèque ; pas de paiement en ligne
 - Référence obligatoire pour tout paiement autre qu'en espèces (ID de transaction, n° de virement ou de chèque)
 - Un paiement ne peut pas dépasser le reste à payer de l'année

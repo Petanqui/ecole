@@ -29,6 +29,7 @@ class ReceiptController extends Controller
         return Pdf::loadView('billing.receipt', [
             'payment' => $payment,
             'total' => $account->total(),
+            'discount' => $account->discount(),
             'paidToDate' => $paidToDate,
         ])
             ->setPaper('a5')

@@ -4,6 +4,7 @@ namespace App\Models\Core;
 
 use App\Enums\Grades\AdmissionExam;
 use App\Models\Attendance\Attendance;
+use App\Models\Billing\Discount;
 use App\Models\Billing\Fee;
 use App\Models\Billing\Payment;
 use App\Models\Grades\AdmissionExamScore;
@@ -98,6 +99,16 @@ class Enrollment extends Model
     public function optionalFees(): BelongsToMany
     {
         return $this->belongsToMany(Fee::class)->where('is_optional', true);
+    }
+
+    /**
+     * The reductions granted to the student this year.
+     *
+     * @return BelongsToMany<Discount, $this>
+     */
+    public function discounts(): BelongsToMany
+    {
+        return $this->belongsToMany(Discount::class);
     }
 
     /**

@@ -2,6 +2,7 @@
 
 namespace App\Filament\Gestion\Resources\Core\Enrollments\Schemas;
 
+use App\Models\Billing\Discount;
 use App\Models\Billing\Fee;
 use App\Models\Core\Enrollment;
 use App\Models\Core\SchoolClass;
@@ -64,7 +65,30 @@ class EnrollmentForm
                     ->getOptionLabelFromRecordUsing(fn (Fee $record): string => "{$record->name} (".StudentAccount::formatAmount($record->amount).')')
                     ->visible(fn (Get $get): bool => static::optionalFeesQuery(Fee::query(), $get('school_class_id'))->exists())
                     ->columnSpanFull(),
+                CheckboxList::make('discounts')
+                    ->label('Réductions')
+                    ->relationship(
+                        'discounts',
+                        'name',
+                        modifyQueryUsing: fn (Builder $query, Get $get) => static::discountsQuery($query, $get('school_class_id')),
+                    )
+                    ->getOptionLabelFromRecordUsing(fn (Discount $record): string => "{$record->name} ({$record->value_label} sur ".$record->fees->pluck('name')->join(', ').')')
+                    ->visible(fn (Get $get): bool => static::discountsQuery(Discount::query(), $get('school_class_id'))->exists())
+                    ->columnSpanFull(),
             ]);
+    }
+
+    /**
+     * Reductions of the school year of the chosen class.
+     *
+     * @param  Builder<Discount>  $query
+     * @return Builder<Discount>
+     */
+    protected static function discountsQuery(Builder $query, mixed $schoolClassId): Builder
+    {
+        $schoolYearId = SchoolClass::whereKey($schoolClassId)->value('school_year_id');
+
+        return $query->where('school_year_id', $schoolYearId)->with('fees')->orderBy('name');
     }
 
     /**

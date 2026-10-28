@@ -165,7 +165,7 @@ test('the receipt shows the amount in words and what is left to pay', function (
         ->assertOk()
         ->assertHeader('content-type', 'application/pdf');
 
-    $html = view('billing.receipt', ['payment' => $payment, 'total' => 125000, 'paidToDate' => 75000])->render();
+    $html = view('billing.receipt', ['payment' => $payment, 'total' => 125000, 'discount' => 0, 'paidToDate' => 75000])->render();
 
     expect($html)
         ->toContain($payment->receipt_number)

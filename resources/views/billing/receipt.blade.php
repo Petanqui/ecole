@@ -80,7 +80,7 @@
     @unless ($payment->isCancelled())
         <table class="account">
             <tr>
-                <td>Total des frais de l'année</td>
+                <td>Total des frais de l'année{{ $discount > 0 ? ' (après '.$amount($discount).' de réduction)' : '' }}</td>
                 <td class="num">{{ $amount($total) }}</td>
             </tr>
             <tr>
