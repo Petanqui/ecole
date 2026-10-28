@@ -3,6 +3,7 @@
 namespace App\Filament\Gestion\Resources\Attendance\AttendanceSessions\Pages;
 
 use App\Filament\Gestion\Resources\Attendance\AttendanceSessions\AttendanceSessionResource;
+use App\Filament\Gestion\Resources\Attendance\AttendanceSessions\Widgets\TodayLessons;
 use App\Models\Attendance\AttendanceSession;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ManageRecords;
@@ -11,8 +12,15 @@ class ManageAttendanceSessions extends ManageRecords
 {
     protected static string $resource = AttendanceSessionResource::class;
 
+    protected function getHeaderWidgets(): array
+    {
+        return [
+            TodayLessons::class,
+        ];
+    }
+
     /**
-     * Opens the roll call of the class as soon as the lesson is recorded.
+     * Opens the roll call of the class as soon as the lesson is recorded, for a lesson outside the timetable.
      */
     protected function getHeaderActions(): array
     {

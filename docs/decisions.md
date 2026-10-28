@@ -127,6 +127,10 @@
 - Un enseignant voit sa semaine (Mon emploi du temps) ; le personnel celle de n'importe quel enseignant (Par enseignant)
 - PDF de l'emploi du temps d'une classe (A4 paysage) : personnel, enseignants, et parents d'un élève de la classe
 - Portail : emploi du temps de la classe de chaque enfant, avec le PDF
+- Présences → Appels : « Cours du jour » d'après l'emploi du temps (ceux de l'enseignant, tous pour le personnel),
+  appel fait / à faire ; « Faire l'appel » crée l'appel prérempli (classe, matière, heure, durée, premier trimestre
+  ouvert) ou rouvre celui déjà fait ; refusé si la classe a déjà un appel sur ce créneau ou si tout est clôturé
+- L'appel manuel (« Faire l'appel » en haut de page) reste possible pour un cours hors emploi du temps
 
 ## Hébergement
 - VPS en Europe, avec déclaration et demande d'autorisation de transfert à l'ARTCI
