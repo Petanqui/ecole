@@ -47,12 +47,14 @@ class AppServiceProvider extends ServiceProvider
     }
 
     /**
-     * Staff record payments; only administrators cancel one. A parent downloads the receipts
-     * of their own children.
+     * Staff record payments and print the cash report; only administrators cancel a payment.
+     * A parent downloads the receipts of their own children.
      */
     protected function defineBillingAbilities(): void
     {
         Gate::define('cancel-payment', fn (User $user, Payment $payment): bool => $user->isAdmin() && ! $payment->isCancelled());
+
+        Gate::define('view-cash-report', fn (User $user): bool => $user->isStaffMember());
 
         Gate::define('download-receipt', function (User $user, Payment $payment): bool {
             if ($user->isStaffMember()) {

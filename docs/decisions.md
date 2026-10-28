@@ -91,6 +91,10 @@
 - Relance groupée (élèves cochés) : message type, en ignorant les élèves à jour et ceux relancés depuis moins de 7 jours
 - Impayés affiche la date de la dernière relance ; l'école est avertie quand la famille n'a pas encore d'accès
   au portail (à appeler)
+- Caisse (Facturation → Caisse, personnel) : paiements d'une période (par date de paiement, par défaut aujourd'hui),
+  filtrables par caissier (« reçu par ») et par mode ; total encaissé, détail par mode et par caissier
+  (espèces à remettre / autres modes) ; les paiements annulés sont listés mais jamais comptés
+- État de caisse en PDF (A4) à signer (caissier, responsable financier) et export CSV des paiements de la période
 - Portail : pour chaque enfant, reste à payer (et retard), échéancier, paiements et téléchargement des reçus
 
 ## Présences
